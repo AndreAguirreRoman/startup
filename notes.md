@@ -1,8 +1,8 @@
-#Notes for tests
+# Notes for tests
 
 **There are many styles that can be used**
 
-##Important git commands
+## Important git commands
 
 ````
 git status
