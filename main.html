@@ -4,22 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Where to Go?</title>
+    <style>
+        /* Add basic styling for the map */
+        .map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGxwwnttHrOURlTcwO4AKLZSlPXhCAaOI&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            var location = {lat: 40.2518, lng: -111.64493};
+            var map = new google.maps.Map(document.querySelector('.map'), {
+                zoom: 8,
+                center: location
+            });
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="navbar">
         <ul>Home</ul>
         <ul>Explore</ul>
         <ul>About Us</ul>
-        <a href="logIn.html">Log In</a>
+        <a href="index.html">Log In</a>
     </div>
     <div class="map">
-        Map goes here....
     </div>
     <footer>
       <hr />
       <span class="text-reset">Andre Aguirre</span>
       <br />
-      <a href="https://github.com/webprogramming260/simon-html">GitHub</a>
+      <a href="https://github.com/AndreAguirreRoman/startup.git">GitHub</a>
     </footer>
 </body>
 </html>
