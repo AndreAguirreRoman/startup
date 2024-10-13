@@ -190,3 +190,52 @@ body {
         margin-right: 10px;
     }
   }
+
+  @media (max-width: 670px) {
+
+    html {
+        overflow: hidden;
+        min-width: 350px;
+    }
+    .navbar-left-link a {
+        font-size: 0.9rem;
+        margin-right: 10px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .body {
+        padding: 10px; 
+        overflow: hidden;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        width: 100vw;
+        height: 100vh;
+        
+    }
+
+    .footer {
+        padding: 5px;
+        flex-direction: row;
+        font-size: 0.8rem;
+        justify-content: center;
+        margin-left: 50px;
+
+
+        &-text {
+            width: 80px;
+        }
+
+        &-text-logo__text {
+            width: 10px;
+        }
+    }
+
+}
