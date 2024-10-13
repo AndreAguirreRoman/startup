@@ -126,4 +126,67 @@ body {
             color: $elegant-slate;
         }
     }
+&-form__wrapper{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+    &-header h1 {
+        color: #FFD700;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    &-header p {
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    &-form, &-form__vote {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 80%;
+        align-items: center;
+        color: #292e49;
+        margin-bottom: 20px;
+    }
+
+    &-form h2, &-form__vote h2 {
+        color: #292e49;
+    }
+
+    &-form input, &-form select {
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    &-form input.submit, &-form__vote input.submit {
+        background-color: #FFD700;
+        color: #292e49;
+        border: none;
+        cursor: pointer;
+        width: 80%;
+        margin-top: 10px;
+    }
+
+    &-form a {
+        text-decoration: none;
+    }
+
+    &-form__vote p {
+        margin-bottom: 20px;
+    }
+
+    &-form__vote label {
+        margin-right: 10px;
+    }
   }

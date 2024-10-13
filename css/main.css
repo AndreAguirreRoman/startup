@@ -31,7 +31,7 @@ body {
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 30px;
-  width: 300px; /* Box width */
+  width: 300px;
   text-align: center;
 }
 .login-box form {
@@ -42,13 +42,13 @@ body {
   margin-bottom: 20px;
 }
 .login-box form .login-box__input input {
-  width: 100%; /* Ensure inputs take up full width of the container */
+  width: 100%;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
   outline: none;
-  box-sizing: border-box; /* Ensures padding is included in the width */
+  box-sizing: border-box;
   margin-bottom: 5px;
 }
 .login-box form .login-box__input input:focus {
@@ -61,7 +61,7 @@ body {
   margin-left: 5px;
 }
 .login-box form .login-box__button {
-  width: 100%; /* Ensure the button is also full width */
+  width: 100%;
   background-color: #292e49;
   color: #fff;
   border: none;
@@ -202,6 +202,61 @@ body {
   height: 100%;
   justify-content: center;
   color: #292e49;
+}
+.body-form__wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.body-header h1 {
+  color: #FFD700;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.body-header p {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+.body-form, .body-form__vote {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 80%;
+  align-items: center;
+  color: #292e49;
+  margin-bottom: 20px;
+}
+.body-form h2, .body-form__vote h2 {
+  color: #292e49;
+}
+.body-form input, .body-form select {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+.body-form input.submit, .body-form__vote input.submit {
+  background-color: #FFD700;
+  color: #292e49;
+  border: none;
+  cursor: pointer;
+  width: 80%;
+  margin-top: 10px;
+}
+.body-form a {
+  text-decoration: none;
+}
+.body-form__vote p {
+  margin-bottom: 20px;
+}
+.body-form__vote label {
+  margin-right: 10px;
 }
 
 /*# sourceMappingURL=main.css.map */
