@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Where to Go?</title>
-
+    <link rel="stylesheet" href="css/main.css">
     <style>
         /* Add basic styling for the map */
         .map {
             height: 500px;
             width: 100%;
         }
+    
         
     </style>
+    
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGxwwnttHrOURlTcwO4AKLZSlPXhCAaOI&callback=initMap" async defer></script>
     <script>
         function initMap() {
@@ -30,15 +32,27 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="main.html">Home</a>
-        <a href="about.html">About Us</a>
-        <a href="index.html">Log In</a>
-        <a href="explore.html">Explore</a>
+        <div class="navbar-left">
+            <div class="navbar-left-link">
+                <a href="main.html">Home</a>
+            </div>
+            <div class="navbar-left-link">
+                <a href="about.html">About Us</a></div>
+            <div class="navbar-left-link">
+                <a href="index.html">Log In</a>
+            </div>
+            <div class="navbar-left-link">
+                <a href="explore.html">Explore</a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <img src="/media/logo.png" alt="logo">
+        </div>
     </div>
     <div class="map"></div>
     <footer>
       <hr />
-      <span class="text-reset">Andre Aguirre</span>
+      <div class="text-reset">Andre Aguirre</div>
       <br />
       <a href="https://github.com/AndreAguirreRoman/startup.git">GitHub</a>
     </footer>

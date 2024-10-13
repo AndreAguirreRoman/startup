@@ -1,0 +1,52 @@
+@import 'colors';
+
+body {
+    background: linear-gradient(135deg, $soft-silver, $elegant-slate);
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    width: 100vw;
+  };
+
+  .navbar {
+    display: flex;
+    height: 80px;
+    width: 100%;
+    justify-content: space-between;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    &-left {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        justify-content: flex-start;
+        width: 50%; 
+        padding-left: 20px;
+
+        a {
+            text-decoration: none; /* Remove underline */
+            color: white; /* Default link color */
+            margin-right: 20px; /* Spacing between links */
+            transition: color 0.5s ease;
+            &:hover {
+              color: $gold;
+              box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+            }
+        }
+    }
+    &-right {
+        width: 50%; 
+        img {
+            width: 80px;
+            height: 50px;
+            margin-top: 10px;
+            justify-content: flex-end;
+            
+        }
+        display: flex;
+        align-items: center;
+        justify-content: right;
+    }
+  }
