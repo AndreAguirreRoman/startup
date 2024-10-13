@@ -1,0 +1,90 @@
+body {
+  background: linear-gradient(135deg, #536976, #292e49);
+  display: flex;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  width: 100vw;
+}
+
+.login-wrapper {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-logo img {
+  width: 40%;
+  height: auto;
+}
+
+.login-box {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 300px; /* Box width */
+  text-align: center;
+}
+.login-box form {
+  display: flex;
+  flex-direction: column;
+}
+.login-box form .login-box__input {
+  margin-bottom: 20px;
+}
+.login-box form .login-box__input input {
+  width: 100%; /* Ensure inputs take up full width of the container */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  box-sizing: border-box; /* Ensures padding is included in the width */
+  margin-bottom: 5px;
+}
+.login-box form .login-box__input input:focus {
+  border-color: #292e49;
+}
+.login-box form .login-box__input .input-label {
+  font-size: 10px;
+  color: #333;
+  text-align: left;
+  margin-left: 5px;
+}
+.login-box form .login-box__button {
+  width: 100%; /* Ensure the button is also full width */
+  background-color: #292e49;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-box form .login-box__button:hover {
+  background-color: rgb(22.6578947368, 25.4210526316, 40.3421052632);
+}
+.login-box form .register-button {
+  background-color: #536976;
+}
+.login-box form .login-box__message {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #536976;
+}
+
+/*# sourceMappingURL=main.css.map */

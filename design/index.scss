@@ -1,0 +1,100 @@
+@import 'colors';
+
+body {
+    background: linear-gradient(135deg, $soft-silver, $elegant-slate);
+    display: flex;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    width: 100vw;
+  }
+
+  .login-wrapper {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+        width: 40%;
+        height: auto;
+    }
+  }
+  
+  .login-box {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 300px;  /* Box width */
+    text-align: center;
+  
+    form {
+      display: flex;
+      flex-direction: column;
+  
+      .login-box__input {
+        margin-bottom: 20px;
+  
+        input {
+          width: 100%;  /* Ensure inputs take up full width of the container */
+          padding: 10px;
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          outline: none;
+          box-sizing: border-box;  /* Ensures padding is included in the width */
+          margin-bottom: 5px;
+  
+          &:focus {
+            border-color: $elegant-slate;
+          }
+        }
+  
+        .input-label {
+          font-size: 10px;
+          color: #333;
+          text-align: left;
+          margin-left: 5px;
+        }
+      }
+  
+      .login-box__button {
+        width: 100%;  /* Ensure the button is also full width */
+        background-color: $elegant-slate;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+        &:hover {
+          background-color: adjust-color($elegant-slate, $lightness: -10%);
+        }
+      }
+  
+      .register-button {
+        background-color: $soft-silver;
+      }
+  
+      .login-box__message {
+        margin-top: 10px;
+        font-size: 14px;
+        color: $soft-silver;
+      }
+    }
+  }

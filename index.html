@@ -4,18 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log In</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+    <div class="login-wrapper">
+
+    
+    <div class="login-logo"><img src="/media/logo.png" alt="Logo"></div>
     <div class="login-box">
         <form method="get" action="main.html">
-            <input type="email" >email</input>
-            <input type="password">password</input>
-
+            <div class="login-box__input">
+                <input type="email" id="email" placeholder="Email">
+                <div class="input-label">Email</div> <!-- Label for Email -->
+            </div>
+            <div class="login-box__input">
+                <input type="password" id="password" placeholder="Password">
+                <div class="input-label">Password</div> <!-- Label for Password -->
+            </div>
             <button class="login-box__button register-button" type="submit">Sign Up</button>
-            <div class="login-box__message">Not registered? Sign-up now!</div>
+            
             <button class="login-box__button login-button" type="submit">Sign In</button>
+            <div class="login-box__message">Not registered? Sign-up now!</div>
         </form>
         
     </div>
+</div>
 </body> 
 </html>
