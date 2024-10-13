@@ -34,7 +34,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 30px;
-    width: 300px;  /* Box width */
+    width: 300px;
     text-align: center;
   
     form {
@@ -45,13 +45,13 @@ body {
         margin-bottom: 20px;
   
         input {
-          width: 100%;  /* Ensure inputs take up full width of the container */
+          width: 100%; 
           padding: 10px;
           font-size: 16px;
           border: 1px solid #ccc;
           border-radius: 5px;
           outline: none;
-          box-sizing: border-box;  /* Ensures padding is included in the width */
+          box-sizing: border-box; 
           margin-bottom: 5px;
   
           &:focus {
@@ -68,7 +68,7 @@ body {
       }
   
       .login-box__button {
-        width: 100%;  /* Ensure the button is also full width */
+        width: 100%;
         background-color: $elegant-slate;
         color: #fff;
         border: none;

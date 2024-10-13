@@ -8,7 +8,7 @@
     <style>
         /* Add basic styling for the map */
         .map {
-            height: 500px;
+            height: calc(100vh - 100px);
             width: 100%;
         }
     
@@ -38,11 +38,12 @@
             </div>
             <div class="navbar-left-link">
                 <a href="about.html">About Us</a></div>
-            <div class="navbar-left-link">
-                <a href="index.html">Log In</a>
-            </div>
+            
             <div class="navbar-left-link">
                 <a href="explore.html">Explore</a>
+            </div>
+            <div class="navbar-left-link">
+                <a href="index.html">Log In</a>
             </div>
         </div>
         <div class="navbar-right">
@@ -50,11 +51,15 @@
         </div>
     </div>
     <div class="map"></div>
-    <footer>
-      <hr />
-      <div class="text-reset">Andre Aguirre</div>
-      <br />
-      <a href="https://github.com/AndreAguirreRoman/startup.git">GitHub</a>
-    </footer>
+    <div class="footer">
+        <div class="footer-text">Andre Aguirre</div>
+        <div class="footer-text-logo">
+            <a href="https://github.com/AndreAguirreRoman/startup.git">
+            <img src="/media/github-mark.png" alt="GitHub" class="footer-text-logo__l">
+            </a>
+            <a class="footer-text-logo__text" href="https://github.com/AndreAguirreRoman/startup.git"> Github</div>
+        </div>
+       
+    </div>
 </body>
 </html>

@@ -95,12 +95,13 @@ body {
   flex-direction: column;
   font-family: Arial, sans-serif;
   margin: 0;
-  width: 100vw;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .navbar {
   display: flex;
-  height: 80px;
+  height: 60px;
   width: 100%;
   justify-content: space-between;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -114,14 +115,13 @@ body {
   padding-left: 20px;
 }
 .navbar-left a {
-  text-decoration: none; /* Remove underline */
-  color: white; /* Default link color */
-  margin-right: 20px; /* Spacing between links */
+  text-decoration: none;
+  color: white;
+  margin-right: 20px;
   transition: color 0.5s ease;
 }
 .navbar-left a:hover {
   color: #FFD700;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
 }
 .navbar-right {
   width: 50%;
@@ -134,6 +134,74 @@ body {
   height: 50px;
   margin-top: 10px;
   justify-content: flex-end;
+}
+
+.footer {
+  height: 40px;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  justify-content: flex-end;
+}
+.footer-text {
+  margin-right: 20px;
+  color: white;
+  transition: color 0.5s ease;
+}
+.footer-text:hover {
+  color: #FFD700;
+}
+.footer-text-logo {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-text-logo a {
+  text-decoration: none;
+  color: white;
+  transition: color 0.5s ease;
+}
+.footer-text-logo a:hover {
+  color: #FFD700;
+}
+.footer-text-logo__text {
+  margin-right: 30px;
+}
+.footer-text-logo__l {
+  height: 20px;
+  width: 20px;
+  margin-right: 20px;
+  filter: invert(100%) brightness(200%);
+}
+
+.body {
+  height: calc(100vh - 100px);
+  width: 100%;
+}
+.body-text {
+  padding: 20px;
+  text-align: left;
+  margin: 0 auto;
+  line-height: 1.6;
+  width: 70%;
+}
+.body-text__content {
+  color: #f0f0f0;
+}
+.body-text__content-highlight {
+  color: #292e49;
+  font-weight: bold;
+}
+.body-text__header {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  color: #292e49;
 }
 
 /*# sourceMappingURL=main.css.map */

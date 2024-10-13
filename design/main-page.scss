@@ -8,12 +8,14 @@ body {
     flex-direction: column;
     font-family: Arial, sans-serif;
     margin: 0;
-    width: 100vw;
+    width: 100%;
+    overflow-x: hidden;
   };
 
+  
   .navbar {
     display: flex;
-    height: 80px;
+    height: 60px;
     width: 100%;
     justify-content: space-between;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -26,13 +28,12 @@ body {
         padding-left: 20px;
 
         a {
-            text-decoration: none; /* Remove underline */
-            color: white; /* Default link color */
-            margin-right: 20px; /* Spacing between links */
+            text-decoration: none;
+            color: white;
+            margin-right: 20px;
             transition: color 0.5s ease;
             &:hover {
               color: $gold;
-              box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
             }
         }
     }
@@ -48,5 +49,81 @@ body {
         display: flex;
         align-items: center;
         justify-content: right;
+    }
+
+    
+  }
+  .footer {
+    height: 40px;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 20px;
+    justify-content: flex-end;
+
+    &-text {
+        margin-right: 20px;
+        color: white;
+            transition: color 0.5s ease;
+            &:hover {
+              color: $gold;
+            }
+    }
+    
+    &-text-logo {
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between; 
+        a {
+            text-decoration: none;
+            color: white;
+            transition: color 0.5s ease;
+            &:hover {
+              color: $gold;
+            }
+        }
+        &__text {
+            margin-right: 30px;
+        }
+        &__l {
+            height: 20px;
+            width: 20px;
+            margin-right: 20px;
+            filter: invert(100%) brightness(200%); 
+        }
+    }
+}  
+
+.body {
+    height: calc(100vh - 100px);
+    width: 100%;
+
+    &-text {
+        padding: 20px;
+        text-align: left;
+        margin: 0 auto;
+        line-height: 1.6;
+        width: 70%;
+
+        &__content {
+            
+            color: $light-grey;
+            &-highlight {
+
+                color: $elegant-slate;
+                font-weight: bold;
+            }
+        }
+
+        &__header {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            color: $elegant-slate;
+        }
     }
   }
