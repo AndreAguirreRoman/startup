@@ -1,3 +1,6 @@
+ # NOTES STARTUP DELIVERABLES!
+- [Notes for the semester](notes.md)
+
 # Event tracker and confirmator
 
 This application aims to be a tool for students and people that are always looking for people-driven information. People often will miss their local events by simply not knowing about them. This tool will help people to share their events, and have people confirm them with no filters or filters added like age-restriction.
@@ -75,7 +78,3 @@ SERVER
 
 
 
-## Link to notes
-
-
-- [Notes from for the semester](notes.md)
