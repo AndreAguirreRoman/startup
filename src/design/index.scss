@@ -1,7 +1,7 @@
-@import 'colors';
+@use 'colors';
 
 body {
-    background: linear-gradient(135deg, $soft-silver, $elegant-slate);
+    background: linear-gradient(135deg, colors.$soft-silver, colors.$elegant-slate);
     display: flex;
     align-items: center;
     font-family: Arial, sans-serif;
@@ -55,7 +55,7 @@ body {
           margin-bottom: 5px;
   
           &:focus {
-            border-color: $elegant-slate;
+            border-color: colors.$elegant-slate;
           }
         }
   
@@ -69,7 +69,7 @@ body {
   
       .login-box__button {
         width: 100%;
-        background-color: $elegant-slate;
+        background-color: colors.$elegant-slate;
         color: #fff;
         border: none;
         border-radius: 5px;
@@ -83,18 +83,18 @@ body {
         align-items: center;
   
         &:hover {
-          background-color: adjust-color($elegant-slate, $lightness: -10%);
+          background-color: adjust(colors.$elegant-slate,-10%);
         }
       }
   
       .register-button {
-        background-color: $soft-silver;
+        background-color: colors.$soft-silver;
       }
   
       .login-box__message {
         margin-top: 10px;
         font-size: 14px;
-        color: $soft-silver;
+        color: colors.$soft-silver;
       }
     }
   }

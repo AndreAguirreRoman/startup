@@ -1,7 +1,10 @@
-@import 'colors';
+@use 'colors';
+
+
+
 
 body {
-    background: linear-gradient(135deg, $soft-silver, $elegant-slate);
+    background: linear-gradient(135deg, colors.$soft-silver, colors.$elegant-slate);
     display: flex;
     height: 100vh;
     align-items: center;
@@ -12,91 +15,14 @@ body {
     overflow-x: hidden;
   };
 
-  
-  .navbar {
-    display: flex;
-    height: 60px;
+
+  .map {
+    height: calc(100vh - 100px) ;
     width: 100%;
-    justify-content: space-between;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    &-left {
-        display: flex;
-        align-items: center;
-        justify-content: left;
-        justify-content: flex-start;
-        width: 50%; 
-        padding-left: 20px;
-
-        a {
-            text-decoration: none;
-            color: white;
-            margin-right: 20px;
-            transition: color 0.5s ease;
-            &:hover {
-              color: $gold;
-            }
-        }
-    }
-    &-right {
-        width: 50%; 
-        img {
-            width: 80px;
-            height: 50px;
-            margin-top: 10px;
-            justify-content: flex-end;
-            
-        }
-        display: flex;
-        align-items: center;
-        justify-content: right;
-    }
-
-    
   }
-  .footer {
-    height: 40px;
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 20px;
-    justify-content: flex-end;
+  
 
-    &-text {
-        margin-right: 20px;
-        color: white;
-            transition: color 0.5s ease;
-            &:hover {
-              color: $gold;
-            }
-    }
-    
-    &-text-logo {
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between; 
-        a {
-            text-decoration: none;
-            color: white;
-            transition: color 0.5s ease;
-            &:hover {
-              color: $gold;
-            }
-        }
-        &__text {
-            margin-right: 30px;
-        }
-        &__l {
-            height: 20px;
-            width: 20px;
-            margin-right: 20px;
-            filter: invert(100%) brightness(200%); 
-        }
-    }
-}  
+
 
 .body {
     height: calc(100vh - 100px);
@@ -111,10 +37,10 @@ body {
 
         &__content {
             
-            color: $light-grey;
+            color: colors.$light-grey;
             &-highlight {
 
-                color: $elegant-slate;
+                color: colors.$elegant-slate;
                 font-weight: bold;
             }
         }
@@ -123,7 +49,7 @@ body {
             display: flex;
             height: 100%;
             justify-content: center;
-            color: $elegant-slate;
+            color: colors.$elegant-slate;
         }
     }
 &-form__wrapper{
