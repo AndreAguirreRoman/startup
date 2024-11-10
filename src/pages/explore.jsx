@@ -3,10 +3,10 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../design/app.scss';
 
-const Explore = () => {
+const Explore = ({ authState, userName, onLogout }) => {
   return (
     <div className="body">
-        <Navbar className="body__navbar"/>
+        <Navbar className="body__navbar" authState={authState} userName={userName} onLogout={onLogout} />
       <div className="body-header">
         <h1>Hot Events Happening</h1>
         <p>Discover the most exciting events happening right now! Don't miss out on the fun.</p>

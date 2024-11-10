@@ -3,10 +3,10 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../design/app.scss';
 
-const About = () => {
+const About = ({ authState, userName, onLogout }) => {
     return (
         <div className="body">
-            <Navbar className="body__navbar"/>
+            <Navbar className="body__navbar" authState={authState} userName={userName} onLogout={onLogout} />
 
             <div className="body-text">
 

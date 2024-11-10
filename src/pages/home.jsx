@@ -4,10 +4,10 @@ import Map from '../components/Map';
 import Footer from '../components/Footer';
 import '../design/app.scss'
 
-const Home = () => {
+const Home = ({authState, userName, onLogout}) => {
   return (
     <div className="home">
-      <Navbar />
+      <Navbar authState={authState} userName={userName} onLogout={onLogout} />
       <Map />
       <Footer />
     </div>

@@ -105,4 +105,13 @@ To deploy the project, we used a deployment script to simplify the process. The 
 
 ```bash
 ./deployFiles.sh -k ~/Desktop/production.pem -h andreaguirre.click -s startup
+```
+To deploy the project in simon, we use a similar script, but change the startup for simon, as following:
 
+##### Now that we have a React file, we changed the file and it is no longer deployFiles, but deployReact.
+```bash
+ # For the simon section 
+./deployReact.sh -k ~/Desktop/production.pem -h andreaguirre.click -s simon
+ # For the startup project section
+./deployReact.sh -k ~/Desktop/production.pem -h andreaguirre.click -s startup
+```
