@@ -115,3 +115,32 @@ To deploy the project in simon, we use a similar script, but change the startup 
  # For the startup project section
 ./deployReact.sh -k ~/Desktop/production.pem -h andreaguirre.click -s startup
 ```
+
+On this we learned the importance of exporting. There are various reasons, when we export default and we import that component into our other sections we can just use the component, if we want to import sections from that component we need to use {}
+
+### 5. React
+
+On react we are going to have a src folder, and 2 index files, one is going to be the html and the other one is going to be jsx, on the JSX we are just going to render the app file that is going to include all our links to the different apps, and the index.html is going to have the script that we are using so it can render all the things we want in the page.
+
+In react it is important to use certain libraries like react-router to make the connections between apps, we have a state that we can use and hooks that are going to work with the state.
+
+For testing we are using the vite functionality and we will use the 
+
+```
+npm run dev
+```
+for testing our files. React helps us solve a lot of the issues of static things from HTML making this react.
+
+In react you can just call the component in the page, and you do not have to reuse code, you can edit those files and make them functinoal like thefollowing code:
+
+```
+<Navbar className="body__navbar" authState={authState} userName={userName} onLogout={onLogout} />
+```
+
+in this section in our navbar component we are passing the authstate to make sure that the navbar knows if it should put a login or logout
+
+In react our components are capitalized and we always should import
+
+````
+import React from 'react';
+````
