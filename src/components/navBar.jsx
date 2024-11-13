@@ -17,7 +17,7 @@ const Navbar = ({ authState, userName, onLogout }) => {
         )}
       </div>
       <div className="navbar-right">
-        <img src="/media/logo.png" alt="logo" />
+        <img src="/public/logo.png" alt="logo" />
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ export function Unauthenticated({ onLogin }) {
   return (
     <div className="login-wrapper">
       <div className="login-logo">
-        <img src="/media/logo.png" alt="Logo" />
+        <img src="/public/logo.png" alt="Logo" />
       </div>
       <div className="login-box">
         <form>
