@@ -64,6 +64,11 @@ body {
           color: #333;
           text-align: left;
           margin-left: 5px;
+
+          &__error {
+            color: red;
+            margin-top: 20px;
+          }
         }
       }
   

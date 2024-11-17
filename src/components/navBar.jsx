@@ -7,9 +7,11 @@ import { AuthState } from './login/authState';
 
 const Navbar = ({ onAuthChange }) => {
 
+  
   const navigate = useNavigate();
   const [authState, setAuthState] = useState(AuthState.Unknown);
   const [userName, setUserName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
 
@@ -21,22 +23,27 @@ const Navbar = ({ onAuthChange }) => {
     } else {
       setAuthState(AuthState.Unauthenticated);
     }
+    setIsLoading(false);
   }, []);
 
   const logout = () => {
     fetch("api/auth/logout", {
-      method: "delete",
+      method: "DELETE",  headers: {
+        "Content-Type": "application/json",
+      },
     }).catch((error) => {
       console.error("Logout failed", error)
     }).finally(() =>{
-      localStorage.removeItem("userName")
-      setAuthState(AuthState.Unauthenticated);
-      setUserName("");
+      localStorage.removeItem("userName");
       onAuthChange && onAuthChange("", AuthState.Unauthenticated);
       navigate("/");
     });
   }
 
+  console.log(authState)
+  if (isLoading) {
+    return <div className="navbar">Loading...</div>;
+  }
 
   return (
     <div className="navbar">
@@ -45,16 +52,17 @@ const Navbar = ({ onAuthChange }) => {
         <NavLink className="navbar-left__link" to="/about">About Us</NavLink>
         <NavLink className="navbar-left__link" to="/explore">Explore</NavLink>
         {authState === AuthState.Authenticated ? (
-          <button className="navbar-left__link" onClick={logout}>Log Out</button>
+          <NavLink className="navbar-left__link" onClick={logout}>Log Out</NavLink>
         ) : (
-          <NavLink className="navbar-left__link" to="/">Log In</NavLink>
+          <NavLink className="navbar-left__link"  onClick={() => console.log("Navigating to /")} to="/">Log In</NavLink>
         )}
       </div>
       <div className="navbar-right">
-        <img src="/logo.png" alt="logo" />
+        
         {authState === AuthState.Authenticated && userName && (
-          <span>Welcome, {userName}!</span>
+          <span>Welcome!</span>
         )}
+        <img src="/logo.png" alt="logo" />
       </div>
     </div>
   );

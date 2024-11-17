@@ -34,7 +34,7 @@ export default function App() {
             path="/"
             element={
               authState === AuthState.Authenticated ? (
-                <Navigate to="/home" />
+                <Navigate to="/home" replace authState={authState} userName={userName} onLogout={() => handleAuthChange('', AuthState.Unauthenticated)}/>
               ) : (
                 <Login onAuthChange={handleAuthChange} userName={userName} authState={authState}  />
               )
