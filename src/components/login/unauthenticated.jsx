@@ -6,17 +6,35 @@ import Button from 'react-bootstrap/Button';
 export function Unauthenticated({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const validateInput = () => {
+    if (!email || !password) {
+      setErrorMessage('Please fill both email and password.')
+      return false;
+    }
+    setErrorMessage("");
+    return true;
+  }
 
   const handleSignIn = (e) => {
     e.preventDefault();
-    localStorage.setItem('userName', email);
-    onLogin(email); // Call the onLogin function to update authentication state
+    if (validateInputs()) {
+      const storedUser = localStorage.getItem("userName");
+      if (storedUser === email) {
+        onLogin(email);
+      } else {
+        setErrorMessage("User does not exist! Please Sign Up!")
+      }
+    }
   };
 
   const handleSignUp = (e) => {
     e.preventDefault();
-    localStorage.setItem('userName', email);
-    onLogin(email); // Call the onLogin function to update authentication state
+    if (validateInput()) {
+      localStorage.setItem("userName", email);
+      onLogin(email);
+    }
   };
 
   return (
