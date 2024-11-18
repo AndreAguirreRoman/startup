@@ -6,6 +6,8 @@ const Location = ({className}) => {
     const [locationError, setLocationError] = useState("");
     const [weather, setWeather] = useState(null);
 
+    const defaultLocation = {latitude: 40.2508, longitude: -111.6493}
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((position) =>{
             const { latitude, longitude } = position.coords;
@@ -14,6 +16,8 @@ const Location = ({className}) => {
 
         }, (error) => {
             setLocationError("Error retrieving location", error.message);
+            setLocation(defaultLocation)
+            fetchWeather(defaultLocation.latitude, defaultLocation.longitude);
         });
     }, []);
 
@@ -35,9 +39,6 @@ const Location = ({className}) => {
 
       
 
-if (locationError) {
-    return <p>{locationError}</p>;
-  }
 
   if (!location || !weather) {
     return <p>Loading</p>;
