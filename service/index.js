@@ -35,6 +35,22 @@ function authenticateToken(req, res, next) {
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
+apiRouter.get('/weather', async (req, res) => {
+  const { lat, lon } = req.query;
+  const apiUrl = `https://dragon.best/api/glax_weather.json?lat=${lat}&lon=${lon}&units=metric`;
+
+  try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      res.json(data);
+  } catch (error) {
+      console.error("Error fetching weather data:", error.message);
+      res.status(500).send({ msg: 'Failed to fetch weather data' });
+  }
+});
+
+
+
 apiRouter.post('/auth/create', async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
   if (!email || !password || !firstName || !lastName) {
@@ -80,6 +96,12 @@ apiRouter.delete('/auth/logout', (req, res) => {
   }
   res.status(204).end();
 });
+
+apiRouter.get('/auth/users', (req, res) => {
+  const userList = Object.values(users).map(({ password, ...user }) => user);
+  res.send(userList);
+});
+
 
 apiRouter.post('/event/create', authenticateToken, (req, res) => {
   events = updateEvents(req.body, scores);

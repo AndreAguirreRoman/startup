@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import '../design/app.scss';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthState } from './login/authState';
+import Location from "./weather"
 
 
 
@@ -45,6 +46,24 @@ const Navbar = ({ onAuthChange }) => {
     return <div className="navbar">Loading...</div>;
   }
 
+  console.log(navigator.geolocation)
+  if ("geolocation" in navigator) {
+    console.log("Geolocation is available.");
+  } else {
+    console.error("Geolocation is not supported by this browser.");
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      console.log("Location Retrieved:", position.coords);
+    },
+    (error) => {
+      console.error("Error retrieving location:", error);
+    }
+  );
+
+
+
   return (
     <div className="navbar">
       <div className="navbar-left">
@@ -60,9 +79,11 @@ const Navbar = ({ onAuthChange }) => {
       <div className="navbar-right">
         
         {authState === AuthState.Authenticated && userName && (
-          <span>Welcome!</span>
+          <div className='navbar-right__user'>Welcome, {userName}!</div>
         )}
-        <img src="/logo.png" alt="logo" />
+        <Location className="navbar-right__weather" />
+        
+        <img className='navbar-right__logo' src='logo.png'></img>
       </div>
     </div>
   );

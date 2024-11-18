@@ -12,7 +12,7 @@ export function Unauthenticated({ onLogin }) {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
 
   const validateInput = () => {
-    if (!email || !password || !firstName || !lastName) {
+    if (!email || !password || (isSignUpMode && (!firstName || !lastName))) {
       setErrorMessage('Please fill in all fields.');
       return false;
     }
@@ -26,7 +26,7 @@ export function Unauthenticated({ onLogin }) {
 
   async function createUser() {
     if (!validateInput()) return;
-    loginOrCreate(`/api/auth/create`);
+    loginOrCreate(`/api/auth/create`, true);
   }
 
   async function loginOrCreate(endpoint, isSignup) {
@@ -34,21 +34,24 @@ export function Unauthenticated({ onLogin }) {
       ? { email, password, firstName, lastName }
       : { email, password };
 
-    try { 
-      const response = await fetch(endpoint, {
-      method: 'POST',
-      body: JSON.stringify({ email: email, password: password }),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
-    if (response?.status === 200) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        });
+    if (response.status === 200) {
       const data = await response.json();
-      localStorage.setItem('userName', email);
-      onLogin(email);
+      localStorage.setItem('userEmail', email);
+      if (isSignup) {
+        localStorage.setItem('userFirstName', firstName); // Save first name during sign-up
+      }
+      onLogin(isSignup ? firstName : email);
     } else {
       const body = await response.json();
-      setDisplayError(`⚠ Error: ${body.msg}`);
+      setDisplayError(`Error: ${body.msg}`);
     }
    } catch (error) {
     setErrorMessage("No account found! Please Sign-up", error)
