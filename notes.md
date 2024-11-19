@@ -144,3 +144,67 @@ In react our components are capitalized and we always should import
 ````
 import React from 'react';
 ````
+
+### 6. Service
+
+We learned how to call API's we need an endpoint that will help us to call the API and then call it within our components. Some of the most important things are the middleware and how we use express. We learned about CORS, and some of the code errors like the following:
+
+Code	Text	Meaning
+100	Continue	The service is working on the request
+200	Success	The requested resource was found and returned as appropriate.
+201	Created	The request was successful and a new resource was created.
+204	No Content	The request was successful but no resource is returned.
+304	Not Modified	The cached version of the resource is still valid.
+307	Permanent redirect	The resource is no longer at the requested location. The new location is specified in the response location header.
+308	Temporary redirect	The resource is temporarily located at a different location. The temporary location is specified in the response location header.
+400	Bad request	The request was malformed or invalid.
+401	Unauthorized	The request did not provide a valid authentication token.
+403	Forbidden	The provided authentication token is not authorized for the resource.
+404	Not found	An unknown resource was requested.
+408	Request timeout	The request takes too long.
+409	Conflict	The provided resource represents an out of date version of the resource.
+418	I'm a teapot	The service refuses to brew coffee in a teapot.
+429	Too many requests	The client is making too many requests in too short of a time period.
+500	Internal server error	The server failed to properly process the request.
+503	Service unavailable	The server is temporarily down. The client should try again with an exponential back off.
+
+We also learned about the command whois that would help us find who owns certain addresses and possibly buy them.
+
+DNS which stands for Domain Name System that is what does the magic so our website that is letters can find the correct IP address for everyone and makes life much more easy.
+
+```
+'/api': 'http://localhost:4000',
+```
+
+Added this configuration that is meant for us to be able to debug.
+
+```
+useEffect(() => {
+        navigator.geolocation.getCurrentPosition((position) =>{
+            const { latitude, longitude } = position.coords;
+            setLocation({latitude, longitude});
+            fetchWeather(latitude, longitude);
+
+        }, (error) => {
+            setLocationError("Error retrieving location", error.message);
+            setLocation(defaultLocation)
+            fetchWeather(defaultLocation.latitude, defaultLocation.longitude);
+        });
+    }, []);
+
+    const fetchWeather = async (latitude, longitude) => {
+        try {
+            const response = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
+            if (response.ok) {
+                const data = await response.json();
+                setWeather(data);
+            } else {
+                console.error("Weather API response error:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching weather:", error.message);
+        }
+    };
+```
+
+This is an example of how to use our APIs we need the useEffect hook, and a function that can call and use it, we need to make the response a json since JS works with Json.
