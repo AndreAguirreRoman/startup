@@ -47,7 +47,8 @@ async function deleteUser(email) {
   }
 
 async function createEvent(author, date, location, ageRestriction, genderRestriction, info, comments = []) {
-  const event = {
+    try {
+    const event = {
     author,
     date: date || new Date().toISOString(),
     location,
@@ -61,7 +62,11 @@ async function createEvent(author, date, location, ageRestriction, genderRestric
 
 
   const result = await eventCollection.insertOne(event);
-  return result.ops[0];
+
+  return { ...event, _id: result.insertedId}; 
+} catch (err) {
+  throw err; 
+}
 }
 
 function getEvents() {
@@ -83,8 +88,8 @@ async function attendEvent(eventId, userId) {
   const result = await eventCollection.updateOne(
     { _id: new ObjectId(eventId) },
     {
-      $push: { attendance: userId }, // Add user to the attendance list
-      $inc: { attendanceCount: 1 }, // Increment the count
+      $push: { attendance: userId },
+      $inc: { attendanceCount: 1 },
     }
   );
 

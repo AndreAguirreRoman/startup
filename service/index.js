@@ -9,14 +9,8 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
 
 app.use(express.json());
-
-// Use the cookie parser middleware for tracking authentication tokens
 app.use(cookieParser());
-
-// Serve up the applications static content
 app.use(express.static('public'));
-
-// Trust headers that are forwarded from the proxy so we can determine IP addresses
 app.set('trust proxy', true);
 
 app.use((req, res, next) => {
@@ -79,15 +73,35 @@ apiRouter.post('/auth/create', async (req, res) => {
 });
 
 
+//  apiRouter.post('/auth/login', async (req, res) => {
+//    const user = await DB.getUser(req.body.email);
+//    if (user) {
+//      if (await bcrypt.compare(req.body.password, user.password)) {
+//        setAuthCookie(res, user.token);
+//        res.send({ id: user._id });`
+//        return;
+//      }
+//    }
+//    res.status(401).send({ msg: 'Unauthorized' });
+//  });
+
 apiRouter.post('/auth/login', async (req, res) => {
   const user = await DB.getUser(req.body.email);
+
   if (user) {
-    if (await bcrypt.compare(req.body.password, user.password)) {
+    console.log('User found:', user); // Debugging log
+    const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+    console.log('Password Match:', passwordMatch); // Debugging log
+
+    if (passwordMatch) {
       setAuthCookie(res, user.token);
-      res.send({ id: user._id });
+      res.send({ id: user._id, token: user.token });
       return;
     }
+  } else {
+    console.log('User not found:', req.body.email); // Debugging log
   }
+
   res.status(401).send({ msg: 'Unauthorized' });
 });
 
@@ -102,6 +116,20 @@ apiRouter.get('/auth/users', (req, res) => {
 });
 
 const secureApiRouter = express.Router();
+apiRouter.use(secureApiRouter);
+
+secureApiRouter.use(async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const authToken = authHeader?.split(' ')[1] || req.cookies[authCookieName];
+  const user = await DB.getUserByToken(authToken);
+  
+  if (user) {
+    req.user = user;
+    next();
+  } else {
+    res.status(401).send({msg: 'Unauthorized'});
+  }
+});
 
 secureApiRouter.delete('/auth/deleteAccount', async (req, res) => {
   try {
@@ -119,6 +147,7 @@ secureApiRouter.delete('/auth/deleteAccount', async (req, res) => {
 
 secureApiRouter.post('/event/create', async (req, res) => {
   const { date, location, ageRestriction, genderRestriction, info } = req.body;
+  
   try {
     const event = await DB.createEvent(
       req.user.email,
@@ -130,7 +159,8 @@ secureApiRouter.post('/event/create', async (req, res) => {
     );
     res.status(201).send(event);
   } catch (err) {
-    res.status(500).send({ error: 'Failed to create event' });
+    console.error('Error in createEvent:', err);
+    res.status(500).send({ error: 'Failed to create event', details: err.message });
   }
 });
 
@@ -158,7 +188,6 @@ app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
 });
 
-// setAuthCookie in the HTTP response
 function setAuthCookie(res, authToken) {
   res.cookie(authCookieName, authToken, {
     secure: true,
