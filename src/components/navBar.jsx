@@ -3,6 +3,7 @@ import '../design/app.scss';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthState } from './login/authState';
 import Location from "./weather"
+import EventForm from './eventCreation';
 
 
 
@@ -13,10 +14,11 @@ const Navbar = ({ onAuthChange }) => {
   const [authState, setAuthState] = useState(AuthState.Unknown);
   const [userName, setUserName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
 
-    const storedUserName = localStorage.getItem("userName");
+    const storedUserName = localStorage.getItem("userFirstName");
 
     if (storedUserName) {
       setAuthState(AuthState.Authenticated); 
@@ -41,16 +43,8 @@ const Navbar = ({ onAuthChange }) => {
     });
   }
 
-  console.log(authState)
   if (isLoading) {
     return <div className="navbar">Loading...</div>;
-  }
-
-  console.log(navigator.geolocation)
-  if ("geolocation" in navigator) {
-    console.log("Geolocation is available.");
-  } else {
-    console.error("Geolocation is not supported by this browser.");
   }
 
   navigator.geolocation.getCurrentPosition(
@@ -61,7 +55,6 @@ const Navbar = ({ onAuthChange }) => {
       console.error("Error retrieving location:", error);
     }
   );
-
 
 
   return (
@@ -77,7 +70,18 @@ const Navbar = ({ onAuthChange }) => {
         )}
       </div>
       <div className="navbar-right">
-        
+      <button onClick={() => setShowModal(true)}>Create Event</button>
+        {showModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <button className="modal-close" onClick={() => setShowModal(false)}>
+                &times;
+              </button>
+              <EventForm />
+            </div>
+          </div>
+        )}
+
         {authState === AuthState.Authenticated && userName && (
           <div className='navbar-right__user'>Welcome, {userName}!</div>
         )}
