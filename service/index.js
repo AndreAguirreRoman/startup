@@ -1,16 +1,23 @@
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const express = require('express');
-const uuid = require('uuid');
 const app = express();
+const DB = require('./database.js');
 
-
+const authCookieName = 'token';
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
-const users = {};
-let events = [];
-let scores = {};
 
 app.use(express.json());
+
+// Use the cookie parser middleware for tracking authentication tokens
+app.use(cookieParser());
+
+// Serve up the applications static content
 app.use(express.static('public'));
+
+// Trust headers that are forwarded from the proxy so we can determine IP addresses
+app.set('trust proxy', true);
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
@@ -52,48 +59,40 @@ apiRouter.get('/weather', async (req, res) => {
 
 
 apiRouter.post('/auth/create', async (req, res) => {
-  const { email, password, firstName, lastName } = req.body;
-  if (!email || !password || !firstName || !lastName) {
-    return res.status(400).send({ msg: 'Missing required fields.' });
-  }
-
-  const user = users[email];
-  if (user) {
+  if (await DB.getUser(req.body.email)) {
     res.status(409).send({ msg: 'Existing user' });
   } else {
-    const newUser = {
-      email,
-      password,
-      firstName,
-      lastName,
-      token: uuid.v4(),
-    };
-    users[email] = newUser;
+    const user = await DB.createUser(
+      req.body.email,
+      req.body.password,
+      req.body.firstName,
+      req.body.lastName
+    );
 
-    res.send({ token: newUser.token });
+    setAuthCookie(res, user.token);
+
+    res.send({
+      id: user._id,
+      token: user.token,
+    });
   }
 });
 
 
 apiRouter.post('/auth/login', async (req, res) => {
-  try {
-    const user = users[req.body.email];
-    if (user && req.body.password === user.password) {
-      user.token = uuid.v4();
-      return res.send({ token: user.token });
+  const user = await DB.getUser(req.body.email);
+  if (user) {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      setAuthCookie(res, user.token);
+      res.send({ id: user._id });
+      return;
     }
-    res.status(401).send({ msg: 'Unauthorized' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ msg: 'An error occurred' });
   }
+  res.status(401).send({ msg: 'Unauthorized' });
 });
 
-apiRouter.delete('/auth/logout', (req, res) => {
-  const user = Object.values(users).find((u) => u.token === req.body.token);
-  if (user) {
-    delete user.token;
-  }
+apiRouter.delete('/auth/logout', (_req, res) => {
+  res.clearCookie(authCookieName);
   res.status(204).end();
 });
 
@@ -102,29 +101,72 @@ apiRouter.get('/auth/users', (req, res) => {
   res.send(userList);
 });
 
+const secureApiRouter = express.Router();
 
-apiRouter.post('/event/create', authenticateToken, (req, res) => {
-  events = updateEvents(req.body, scores);
-  res.send(events);
+secureApiRouter.delete('/auth/deleteAccount', async (req, res) => {
+  try {
+    const result = await DB.deleteUser(req.user.email); // Delete user by email
+    if (result.deletedCount > 0) {
+      res.clearCookie(authCookieName); // Clear the auth cookie
+      res.status(200).send({ msg: 'Account deleted successfully' });
+    } else {
+      res.status(404).send({ msg: 'User not found' });
+    }
+  } catch (err) {
+    res.status(500).send({ error: 'Failed to delete account' });
+  }
 });
 
-// Event Update Function
-function updateEvents(eventData, scores) {
-  const event = {
-    id: uuid.v4(),
-    name: eventData.name,
-    date: eventData.date || new Date(),
-    details: eventData.details || "",
-  };
+secureApiRouter.post('/event/create', async (req, res) => {
+  const { date, location, ageRestriction, genderRestriction, info } = req.body;
+  try {
+    const event = await DB.createEvent(
+      req.user.email,
+      date,
+      location,
+      ageRestriction,
+      genderRestriction,
+      info
+    );
+    res.status(201).send(event);
+  } catch (err) {
+    res.status(500).send({ error: 'Failed to create event' });
+  }
+});
 
-  events.push(event);
-  return events;
+secureApiRouter.get('/event/all', async (_req, res) => {
+  try {
+    const events = await DB.getEvents();
+    res.status(200).send(events);
+  } catch (err) {
+    res.status(500).send({ error: 'Failed to fetch events' });
+  }
+});
+
+secureApiRouter.post('/event/rsvp/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const event = await DB.attendEvent(id, req.user.email);
+    res.status(200).send(event);
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
+});
+
+
+app.use(function (err, req, res, next) {
+  res.status(500).send({ type: err.name, message: err.message });
+});
+
+// setAuthCookie in the HTTP response
+function setAuthCookie(res, authToken) {
+  res.cookie(authCookieName, authToken, {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'strict',
+  });
 }
 
-app.use((_req, res) => {
-  res.sendFile('index.html', { root: 'public' });
-});
-
-app.listen(port, () => {
+const httpService = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

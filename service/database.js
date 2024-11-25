@@ -5,7 +5,7 @@ const config = require('./dbConfig.json');
 
 const url = `mongodb+srv://${config.userName}:${config.password}@${config.hostname}`;
 const client = new MongoClient(url);
-const db = client.db('simon');
+const db = client.db('startup');
 const userCollection = db.collection('user');
 const eventCollection = db.collection('event');
 
@@ -42,10 +42,14 @@ async function createUser(email, password, firstName, lastName) {
   return user;
 }
 
+async function deleteUser(email) {
+    return await userCollection.deleteOne({ email });
+  }
+
 async function createEvent(author, date, location, ageRestriction, genderRestriction, info, comments = []) {
   const event = {
     author,
-    date,
+    date: date || new Date().toISOString(),
     location,
     ageRestriction,
     genderRestriction,
@@ -54,38 +58,45 @@ async function createEvent(author, date, location, ageRestriction, genderRestric
     attendance: [],
     attendanceCount: 0,
   };
-  await eventCollection.insertOne(event);
-  return event;
+
+
+  const result = await eventCollection.insertOne(event);
+  return result.ops[0];
 }
 
 function getEvents() {
     return eventCollection.find().toArray();
 }
 
-async function attendEvent(eventId, userId) {
-    const event = await eventCollection.findOne({_id: eventId});
-    if (event.attendance.includes(userId)) {
-        throw new Error("Already in the list.")
-    }
 
-    await eventCollection.updateOne({eventId},
-        {
-            $push: {attendance: userId},
-            $inc: {attendanceCount: 1},
-        }
-    );
+async function attendEvent(eventId, userId) {
+  const event = await eventCollection.findOne({ _id: new ObjectId(eventId) });
+
+  if (!event) {
+    throw new Error('Event not found');
+  }
+
+  if (event.attendance.includes(userId)) {
+    throw new Error('User already in the attendance list');
+  }
+
+  const result = await eventCollection.updateOne(
+    { _id: new ObjectId(eventId) },
+    {
+      $push: { attendance: userId }, // Add user to the attendance list
+      $inc: { attendanceCount: 1 }, // Increment the count
+    }
+  );
+
+  if (result.modifiedCount === 0) {
+    throw new Error('Failed to update attendance');
+  }
+
+  return { ...event, attendance: [...event.attendance, userId], attendanceCount: event.attendanceCount + 1 };
 }
 
-
-
-function getHighScores() {
-  const query = { score: { $gt: 0, $lt: 900 } };
-  const options = {
-    sort: { score: -1 },
-    limit: 10,
-  };
-  const cursor = scoreCollection.find(query, options);
-  return cursor.toArray();
+async function getEventById(eventId) {
+  return await eventCollection.findOne({ _id: new ObjectId(eventId) });
 }
 
 module.exports = {
@@ -93,5 +104,8 @@ module.exports = {
   getUserByToken,
   createUser,
   createEvent,
-  getHighScores,
+  getEvents,
+  attendEvent,
+  getEventById,
+  deleteUser
 };
