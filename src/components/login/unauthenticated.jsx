@@ -45,6 +45,7 @@ export function Unauthenticated({ onLogin }) {
     if (response.status === 200) {
       const data = await response.json();
       localStorage.setItem('userEmail', email);
+      localStorage.setItem('authToken', data.token);
       if (isSignup) {
         localStorage.setItem('userFirstName', firstName); // Save first name during sign-up
       }

@@ -60,9 +60,9 @@ apiRouter.post('/auth/create', async (req, res) => {
       req.body.email,
       req.body.password,
       req.body.firstName,
-      req.body.lastName
+      req.body.lastName,
     );
-
+    console.log("token:", user.token)
     setAuthCookie(res, user.token);
 
     res.send({
@@ -122,9 +122,11 @@ secureApiRouter.use(async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const authToken = authHeader?.split(' ')[1] || req.cookies[authCookieName];
   const user = await DB.getUserByToken(authToken);
+  console.log("Auth token received:", authToken);
   
   if (user) {
     req.user = user;
+    console.log(req.user);
     next();
   } else {
     res.status(401).send({msg: 'Unauthorized'});
@@ -159,6 +161,7 @@ secureApiRouter.post('/event/create', async (req, res) => {
     );
     res.status(201).send(event);
   } catch (err) {
+    console.log(req.user);
     console.error('Error in createEvent:', err);
     res.status(500).send({ error: 'Failed to create event', details: err.message });
   }

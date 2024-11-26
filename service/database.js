@@ -27,7 +27,6 @@ function getUserByToken(token) {
 }
 
 async function createUser(email, password, firstName, lastName) {
-  // Hash the password before we insert it into the database
   const passwordHash = await bcrypt.hash(password, 10);
 
   const user = {
@@ -46,7 +45,7 @@ async function deleteUser(email) {
     return await userCollection.deleteOne({ email });
   }
 
-async function createEvent(author, date, location, ageRestriction, genderRestriction, info, comments = []) {
+  async function createEvent(author, date, location, ageRestriction, genderRestriction, info, comments = []) {
     try {
     const event = {
     author,
@@ -64,9 +63,9 @@ async function createEvent(author, date, location, ageRestriction, genderRestric
   const result = await eventCollection.insertOne(event);
 
   return { ...event, _id: result.insertedId}; 
-} catch (err) {
-  throw err; 
-}
+  } catch (err) {
+    throw err; 
+  }
 }
 
 function getEvents() {

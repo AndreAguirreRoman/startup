@@ -36,6 +36,8 @@ const EventForm = () => {
         setLoading(true);
         setResponseMessage("");
 
+        console.log("");
+
         const address = `${formData.street}, ${formData.city}, ${formData.state}`;
         const location = await fetchGeocoding(address);
         if (!location) {
@@ -51,6 +53,7 @@ const EventForm = () => {
           genderRestriction: formData.genderRestriction,
           info: formData.info,
         };
+        console.log("In event data const: ", eventData);
         
         setLoading(false);
       
@@ -58,6 +61,7 @@ const EventForm = () => {
           "/api/event/create",
           eventData,
           (data) => {
+            console.log("Data:", data)
             setResponseMessage("Event created successfully!");
             console.log("Event Created:", data);
             setLoading(false);
@@ -97,6 +101,7 @@ const EventForm = () => {
     const createEvent = async (endpoint, eventData, onSuccess, onError) => {
         try {
           const token = localStorage.getItem("authToken");
+          console.log("createing event", token)
     
           const response = await fetch(endpoint, {
             method: "POST",

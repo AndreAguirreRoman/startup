@@ -40,6 +40,7 @@ const Navbar = ({ onAuthChange }) => {
       localStorage.removeItem("userName");
       onAuthChange && onAuthChange("", AuthState.Unauthenticated);
       navigate("/");
+      window.location.reload();
     });
   }
 
