@@ -1,6 +1,6 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
-import Map from '../components/Map';
+import Navbar from '../components/navBar';
+import MapComponent from '../components/map';
 import Footer from '../components/Footer';
 import '../design/app.scss'
 
@@ -8,10 +8,10 @@ const Home = ({authState, userName, onLogout}) => {
   return (
     <div className="home">
       <Navbar authState={authState} userName={userName} onLogout={onLogout} />
-      <Map />
+      <MapComponent />
       <Footer />
     </div>
   );
 };
 
-export default Home;
+export default Home

@@ -208,3 +208,62 @@ useEffect(() => {
 ```
 
 This is an example of how to use our APIs we need the useEffect hook, and a function that can call and use it, we need to make the response a json since JS works with Json.
+
+
+### 7. LOGIN
+
+There are many important aspects of a database. We used many libraries that made our life easier.
+
+Cookie Parser
+Bcrypt
+Express
+DB
+
+All of these were used to set the Authenticate Token, to provide the cookie for our users, and with this create a new user or login
+
+for login we used the method post as follows: 
+
+```
+apiRouter.post('/auth/login', async (req, res) => {
+    const user = await DB.getUser(req.body.email);
+
+    if(user) {
+        const passwordMatch = await bcrypt.compare(req.body.password, user.password)
+        // We are using bcrypt to "encrypt" passwords for security
+        if (passwordMatch) {
+      setAuthCookie(res, user.token);
+      res.send({ id: user._id, token: user.token });
+      return;
+    }
+  } else {
+    console.log('User not found:', req.body.email); // Debugging log
+  }
+
+  res.status(401).send({ msg: 'Unauthorized' });
+});
+```
+
+| Status Code | Description                | Explanation                                                                     |
+|-------------|----------------------------|---------------------------------------------------------------------------------|
+| 100         | Continue                   | The service is working on the request.                                         |
+| 200         | Success                    | The requested resource was found and returned as appropriate.                  |
+| 201         | Created                    | The request was successful and a new resource was created.                     |
+| 204         | No Content                 | The request was successful but no resource is returned.                        |
+| 304         | Not Modified               | The cached version of the resource is still valid.                             |
+| 307         | Permanent redirect         | The resource is no longer at the requested location. New location in response. |
+| 308         | Temporary redirect         | The resource is temporarily at a different location. Temporary location given. |
+| 400         | Bad request                | The request was malformed or invalid.                                          |
+| 401         | Unauthorized               | The request did not provide a valid authentication token.                      |
+| 403         | Forbidden                  | The provided authentication token is not authorized for the resource.          |
+| 404         | Not found                  | An unknown resource was requested.                                             |
+| 408         | Request timeout            | The request takes too long.                                                    |
+| 409         | Conflict                   | The provided resource represents an outdated version of the resource.          |
+| 418         | I'm a teapot               | The service refuses to brew coffee in a teapot.                                |
+| 429         | Too many requests          | The client is making too many requests in too short of a time period.          |
+| 500         | Internal server error      | The server failed to properly process the request.                             |
+| 503         | Service unavailable        | The server is temporarily down. Try again with exponential back off.           |
+
+
+With this we also learned about the secureApiRouter section of express, with this we will require authorization tokens for users in order to safeguard and limit what they can access.
+
+We learned about Atlas MongoDB service. In order to work, we have to create a dbConfig.json since it is going to use our credentials to access our database, this should not be addeed into our gitHub.

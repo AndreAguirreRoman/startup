@@ -50,7 +50,7 @@ const Navbar = ({ onAuthChange }) => {
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
-      console.log("Location Retrieved:", position.coords);
+      console.log(position)
     },
     (error) => {
       console.error("Error retrieving location:", error);
