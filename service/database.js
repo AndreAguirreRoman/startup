@@ -2,6 +2,8 @@ const { MongoClient } = require('mongodb');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 const config = require('./dbConfig.json');
+const { ObjectId } = require('mongodb');
+
 
 const url = `mongodb+srv://${config.userName}:${config.password}@${config.hostname}`;
 const client = new MongoClient(url, { tls: true, serverSelectionTimeoutMS: 3000, autoSelectFamily: false, });
@@ -71,6 +73,31 @@ async function deleteUser(email) {
 function getEvents() {
     return eventCollection.find().toArray();
 }
+async function addCommentToEvent(eventId, comment) {
+  const result = await eventCollection.updateOne(
+    { _id: new ObjectId(eventId) },
+    { $push: { comments: comment } }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new Error('Event not found');
+  }
+
+  return await getEventById(eventId); // Return the updated event
+}
+
+async function incrementAttendance(eventId) {
+  const result = await eventCollection.updateOne(
+    { _id: new ObjectId(eventId) },
+    { $inc: { attendanceCount: 1 } }
+  );
+
+  if (result.matchedCount === 0) {
+    throw new Error('Event not found');
+  }
+
+  return await getEventById(eventId); // Return the updated event
+}
 
 
 async function attendEvent(eventId, userId) {
@@ -111,5 +138,8 @@ module.exports = {
   getEvents,
   attendEvent,
   getEventById,
-  deleteUser
+  deleteUser,
+  incrementAttendance,
+  addCommentToEvent,
+  
 };

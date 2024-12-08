@@ -125,10 +125,10 @@ const EventForm = () => {
     };
 
     return (
-        <div>
+        <div className="create-event__wrapper">
           <h2>Create Event</h2>
-          <form onSubmit={handleSubmit}>
-            <div>
+          <form className={"create-event"} onSubmit={handleSubmit}>
+            <div className="create-event__date">
               <label htmlFor="date">Event Date:</label>
               <input
                 type="datetime-local"
@@ -139,31 +139,36 @@ const EventForm = () => {
                 required
               />
             </div>
+
+            <div className="create-event__street">
+                <label htmlFor="street">street:</label>
+                  <input
+                    type="text"
+                    id="street"
+                    name="street"
+                    value={formData.street}
+                    onChange={handleChange}
+                    required
+                  />
+              </div>
     
 
-            <div>
-              <label htmlFor="street">street:</label>
-                <input
-                  type="text"
-                  id="street"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleChange}
-                  required
-                />
-            </div>
-            <div>
-              <label htmlFor="city">city:</label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                />
-            </div>
-            <div>
+            <div className="create-event__address">
+              
+
+              <div className="create-event__address-city">
+                <label htmlFor="city">city:</label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                  />
+              </div>
+
+              <div className="create-event__address-state">
               <label htmlFor="state">state:</label>
                 <input
                   type="text"
@@ -174,8 +179,18 @@ const EventForm = () => {
                   required
                 />
             </div>
+
+            </div>
+            
+            
+
+            <div className='create-event__restrictions-text'>Restrictions</div>
+
     
-            <div>
+            <div className="create-event__restrictions">
+
+              <div className="create-event__restrictions-age">
+
               <label htmlFor="ageRestriction">Age Restriction:</label>
               <input
                 type="text"
@@ -184,24 +199,27 @@ const EventForm = () => {
                 value={formData.ageRestriction}
                 onChange={handleChange}
               />
+              </div>
+              <div className="create-event__restrictions-gender">
+                <label htmlFor="genderRestriction">Gender?:</label>
+                <select
+                  type="text"
+                  id="genderRestriction"
+                  name="genderRestriction"
+                  value={formData.genderRestriction}
+                  onChange={handleChange}
+                >
+                  <option value={"none"}>None</option>
+                  <option value={"male"}>Only male</option>
+                  <option value={"female"}>Only women</option>
+                </select>
+            </div>
+
             </div>
     
-            <div>
-              <label htmlFor="genderRestriction">Gender Restriction:</label>
-              <select
-                type="text"
-                id="genderRestriction"
-                name="genderRestriction"
-                value={formData.genderRestriction}
-                onChange={handleChange}
-              >
-                <option value={"none"}>None</option>
-                <option value={"male"}>Only male</option>
-                <option value={"female"}>Only women</option>
-              </select>
-            </div>
+            
     
-            <div>
+            <div className="create-event__info">
               <label htmlFor="info">Event Info:</label>
               <textarea
                 id="info"
@@ -212,7 +230,7 @@ const EventForm = () => {
               />
             </div>
     
-            <button type="submit" disabled={loading}>
+            <button className="button" type="submit" disabled={loading}>
               {loading ? "Creating..." : "Create Event"}
             </button>
           </form>

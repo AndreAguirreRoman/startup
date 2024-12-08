@@ -4,11 +4,104 @@ const express = require('express');
 const app = express();
 const DB = require('./database.js');
 require('dotenv').config();
+const { WebSocketServer } = require('ws');
 
 console.log(process.env)
 
 const authCookieName = 'token';
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
+
+
+const wss = new WebSocketServer({ noServer: true });
+const connections = [];
+
+// Ping-pong mechanism to keep connections alive
+const interval = setInterval(() => {
+  connections.forEach((connection) => {
+    if (!connection.alive) {
+      connection.ws.terminate();
+    } else {
+      connection.alive = false;
+      connection.ws.ping();
+    }
+  });
+}, 10000); // Every 10 seconds
+
+wss.on('connection', (ws) => {
+  console.log('New WebSocket connection established');
+
+  const connection = { ws, alive: true };
+  connections.push(connection);
+
+  // Respond to pong messages
+  ws.on('pong', () => {
+    connection.alive = true;
+  });
+
+  ws.on('message', async (message) => {
+    try {
+      const data = JSON.parse(message);
+      console.log('WebSocket message received:', data);
+
+      if (data.type === 'comment') {
+        const { eventId, comment } = data.payload;
+        const user = data.user || "Anonymous";
+
+        // Save comment to database
+        const updatedEvent = await DB.addCommentToEvent(eventId, {
+          user,
+          comment: comment.trim(),
+          timestamp: new Date(),
+        });
+
+        // Broadcast new comment to all connected clients
+        const broadcastMessage = JSON.stringify({
+          type: 'comment',
+          payload: {
+            eventId,
+            comment: {
+              user,
+              comment: comment.trim(),
+              timestamp: new Date(),
+            },
+          },
+        });
+
+        connections.forEach((client) => {
+          if (client.ws.readyState === ws.OPEN) {
+            client.ws.send(broadcastMessage);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Error handling WebSocket message:', err.message);
+    }
+  });
+
+  ws.on('close', () => {
+    const index = connections.indexOf(connection);
+    if (index > -1) {
+      connections.splice(index, 1);
+    }
+    console.log('WebSocket connection closed');
+  });
+});
+
+// Clean up interval on server close
+wss.on('close', () => {
+  clearInterval(interval);
+});
+
+// HTTP Server Integration
+const server = app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
+
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
+  });
+});
 
 
 app.use(express.json());
@@ -20,21 +113,6 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
-
-function authenticateToken(req, res, next) {
-  const token = req.headers['authorization'];
-  if (!token) {
-    return res.status(401).send({ msg: 'Unauthorized' });
-  }
-
-  const user = Object.values(users).find((u) => u.token === token);
-  if (!user) {
-    return res.status(403).send({ msg: 'Forbidden' });
-  }
-
-  req.user = user;
-  next();
-}
 
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
@@ -179,15 +257,87 @@ secureApiRouter.get('/event/all', async (_req, res) => {
   }
 });
 
-secureApiRouter.post('/event/rsvp/:id', async (req, res) => {
+secureApiRouter.get('/event/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
-    const event = await DB.attendEvent(id, req.user.email);
+    const event = await DB.getEventById(id); 
+    if (!event) {
+      return res.status(404).send({ error: 'Event not found' });
+    }
     res.status(200).send(event);
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    console.error('Error fetching event:', err);
+    res.status(500).send({ error: 'Failed to fetch event', details: err.message });
   }
 });
+
+
+
+secureApiRouter.post('/event/:id/comments', async (req, res) => {
+  const { id } = req.params; // Event ID
+  const { comment } = req.body;
+
+  if (!comment || comment.trim() === '') {
+    return res.status(400).send({ error: 'Comment cannot be empty' });
+  }
+
+  try {
+    const updatedEvent = await DB.addCommentToEvent(id, {
+      user: req.user.email,
+      comment: comment.trim(),
+      timestamp: new Date(),
+    });
+    res.status(201).send(updatedEvent);
+  } catch (err) {
+    console.error('Error adding comment:', err);
+    res.status(500).send({ error: 'Failed to add comment', details: err.message });
+  }
+});
+
+// Fetch comments for an event
+secureApiRouter.get('/event/:id/comments', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const comments = await DB.getEventComments(id);
+    res.status(200).send(comments);
+  } catch (err) {
+    console.error('Error fetching comments:', err);
+    res.status(500).send({ error: 'Failed to fetch comments', details: err.message });
+  }
+});
+
+
+// Increment attendance for an event
+secureApiRouter.post('/event/:id/attend', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updatedEvent = await DB.incrementAttendance(id);
+    res.status(200).send(updatedEvent); // Send updated event
+  } catch (err) {
+    console.error('Error incrementing attendance:', err);
+    res.status(500).send({ error: 'Failed to increment attendance', details: err.message });
+  }
+});
+
+// Get the current attendance count for an event
+secureApiRouter.get('/event/:id/attendance', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const event = await DB.getEventById(id);
+    if (!event) {
+      return res.status(404).send({ error: 'Event not found' });
+    }
+    res.status(200).send({ attendance: event.attendance });
+  } catch (err) {
+    console.error('Error fetching attendance:', err);
+    res.status(500).send({ error: 'Failed to fetch attendance', details: err.message });
+  }
+});
+
 
 
 app.use(function (err, req, res, next) {
@@ -201,7 +351,3 @@ function setAuthCookie(res, authToken) {
     sameSite: 'strict',
   });
 }
-
-const httpService = app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});

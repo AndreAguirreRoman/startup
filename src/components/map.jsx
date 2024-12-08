@@ -1,54 +1,75 @@
+import '../design/app.scss';
+import Dots from './dots'
 import React, { useEffect, useState } from 'react';
-import '../design/app.scss'
+import {
+  APIProvider,
+  Map,
+  AdvancedMarker,
+  Pin,
+  InfoWindow,
+  useMap
+} from "@vis.gl/react-google-maps";
 
-const Map = () => {
+
+const MapComponent = () => {
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState("");
+  const [markers, setMarkers] = useState("")
+  const [infoWindowOpen, setInfoWindowOpen] = useState(false);
 
-  const defaultLocation = {latitude: 40.2508, longitude: -111.6493}
+  const defaultLocation = { lat: 40.2508, lng: -111.6493 };
+
   useEffect(() => {
-    // Fetch user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        setLocation({ latitude, longitude });
+        setLocation({
+          lat: parseFloat(latitude.toFixed(4)),
+          lng: parseFloat(longitude.toFixed(4)),
+        });
       },
       (error) => {
         setLocationError(`Error retrieving location: ${error.message}`);
-        setLocation(defaultLocation)
+        setLocation(defaultLocation);
+        console.log(locationError)
       }
     );
   }, []);
 
-  useEffect(() => {
-    if (location) {
-    const initMap = () => {
-      const map = new window.google.maps.Map(document.querySelector('.map'), {
-        zoom: 15,
-        center: {lat: location.latitude, lng: location.longitude},
-      });
-      new window.google.maps.Marker({
-        position: {lat: location.latitude, lng: location.longitude},
-        map: map,
-      });
-    };
+  const points = [
+    { lat: 40.2508, lng: -111.6493, key: "1", info: "Point 1 Info" },
+    { lat: 40.2338, lng: -111.6585, key: "2", info: "Point 2 Info" },
+    { lat: 40.2484, lng: -111.6435, key: "3", info: "Point 3 Info" },
+  ];
+  const handleMarkerClick = (pointKey) => {
+    setInfoWindowOpen((prev) => (prev === pointKey ? null : pointKey));
+  };
 
-    // Load Google Maps API script
-    if (!window.google || !window.google.maps) {
-      const script = document.createElement('script');
-      script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDGxwwnttHrOURlTcwO4AKLZSlPXhCAaOI";
-      script.async = true;
-      script.defer = true;
-      script.onload = () => initMap();
-      document.body.appendChild(script);
-    } else {
-      initMap();
-    }
-  }
-}, [location]);
+  return (
+    <APIProvider apiKey={'AIzaSyBnOXew-3iQOkCV2EZWNKalALeOI2zoRjQ'}>
+      <div className='map'>
+        <Map defaultCenter={location || defaultLocation} defaultZoom={15} mapId={'6200dd9690f1dbd8'}>
+        {points.map((point) => (
+            <React.Fragment key={point.key}>
+              <AdvancedMarker
+                position={{ lat: point.lat, lng: point.lng }}
+                onClick={() => handleMarkerClick(point.key)}
+              >
+              </AdvancedMarker>
+              {infoWindowOpen === point.key && (
+                <InfoWindow position={{ lat: point.lat, lng: point.lng }}>
+                  <div>
+                    <p>{point.info}</p>
+                  </div>
+                </InfoWindow>
+              )}
+            </React.Fragment>
+          ))}
+        </Map>
+      </div>
+    </APIProvider>
+  );
+}
 
-  return <div className="map"/>;
-};
-
-export default Map;
+export default MapComponent

@@ -4,4 +4,16 @@
 @use 'header';
 @use 'footer';
 @use 'weather';
+@use 'event-modal';
  
+.body-general {
+    height: calc(100vh - 140px)
+}
+
+.body-text__header {
+    height: 100px
+}
+
+.body-explore {
+    height: calc(100vh - 120px);
+}

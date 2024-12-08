@@ -3,6 +3,7 @@ import Home from './pages/home';
 import About from './pages/about';
 import Explore from './pages/explore';
 import Login from './pages/login';
+import Event from './pages/event';
 import { AuthState } from './components/login/authState';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 
@@ -53,6 +54,10 @@ export default function App() {
           <Route
             path="/explore"
             element={<Explore authState={authState} userName={userName} onLogout={() => handleAuthChange('', AuthState.Unauthenticated)} />}
+            exact
+          />
+          <Route path="/event"
+            element={<Event authState={authState} userName={userName} onLogout={() => handleAuthChange('', AuthState.Unauthenticated)} />}
             exact
           />
           <Route path="*" element={<NotFound />} />

@@ -1,16 +1,13 @@
-import React from 'react';
+import React from "react"
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import '../design/app.scss';
 
-const About = ({ authState, userName, onLogout }) => {
-    return (
-        <div className="body">
-            <Navbar className="body__navbar" authState={authState} userName={userName} onLogout={onLogout} />
+const Event = () => {
+    return(
+        <div className="event">
+            <Navbar className="event-navbar"/>
+            <div className="event-body body-general">
 
-            <div className="body-text body-general">
-
-                <div className="body-text__header">
                     <h1> About Us!</h1>
                 </div>
                 <div className="body-text__content">
@@ -24,14 +21,11 @@ const About = ({ authState, userName, onLogout }) => {
                     
                     <p>No more boring weekends! Remember, <span className="body-text__content-highlight">your night, your rules.</span> You will have the option to choose what to do!</p>
 
-                </div>
-                
+
             </div>
-            <Footer className="body__footer"/>        
-            
-        
+            <Footer className="event-footer"/>
         </div>
     )
 }
 
-export default About;
+export default Event;

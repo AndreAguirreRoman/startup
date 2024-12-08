@@ -78,7 +78,7 @@ const Navbar = ({ onAuthChange }) => {
               <button className="modal-close" onClick={() => setShowModal(false)}>
                 &times;
               </button>
-              <EventForm />
+              <EventForm/>
             </div>
           </div>
         )}
