@@ -1,124 +1,118 @@
-import '../design/app.scss'
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const EventModal = ({ eventId, onClose }) => {
-  const [event, setEvent] = useState(null);
-  const [address, setAddress] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [comments, setComments] = useState([]); // Manage comments locally
+  const [comments, setComments] = useState([]); // Store comments
+  const [newComment, setNewComment] = useState(""); // Input for new comment
+  const [socket, setSocket] = useState(null); // WebSocket connection
+  const [status, setStatus] = useState("Disconnected"); // Connection status
 
   useEffect(() => {
-    const fetchEventAndAddress = async () => {
+    // Establish WebSocket connection
+    const protocol = window.location.protocol === "http:" ? "ws" : "wss";
+    const ws = new WebSocket(`${protocol}://${window.location.host}/ws`);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+      setStatus("Connected");
+      ws.send(JSON.stringify({ type: "subscribe", eventId })); // Subscribe to this event
+    };
+
+    ws.onmessage = (event) => {
       try {
-        // Fetch event details
-        const eventResponse = await fetch(`/api/event/${eventId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-          },
-        });
-
-        if (!eventResponse.ok) {
-          throw new Error('Failed to fetch event details');
+        const data = JSON.parse(event.data);
+        if (data.type === "new_comment" && data.eventId === eventId) {
+          setComments((prev) => [...prev, data.comment]); // Append new comment
         }
-
-        const eventData = await eventResponse.json();
-        setEvent(eventData);
-        setComments(eventData.comments); // Initialize comments
-
-        // Reverse geocode to get the address
-        const address = await reverseGeocode(eventData.location.lat, eventData.location.lng);
-        setAddress(address);
       } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        console.error("Error parsing WebSocket message:", err);
       }
     };
 
-    fetchEventAndAddress();
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+      setStatus("Disconnected");
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
+
+    setSocket(ws);
+
+    return () => {
+      ws.close();
+    };
   }, [eventId]);
 
-  const handlePostComment = async (comment) => {
+  useEffect(() => {
+    // Fetch initial comments when the modal opens
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`/api/event/${eventId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch comments");
+        }
+
+        const data = await response.json();
+        setComments(data.comments || []); // Initialize comments
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
+    };
+
+    fetchComments();
+  }, [eventId]);
+
+  
+  const handlePostComment = async () => {
+    if (!newComment.trim()) return; // Do not allow empty comments
+  
     try {
-      // Retrieve user info from localStorage (ensure it's stored when the user logs in)
-      const user = JSON.parse(localStorage.getItem('user')) || { firstName: 'Guest', lastName: '' };
-  
-      const newComment = {
-        user: `${user.firstName} ${user.lastName}`, // Use user's full name
-        comment: comment.trim(),
-        timestamp: new Date().toISOString(),
-      };
-  
-      // Optimistically update the comments in the UI
-      setComments((prevComments) => [...prevComments, newComment]);
-  
-      // Post the new comment to the API
+      // POST the new comment to the server
       const response = await fetch(`/api/event/${eventId}/comments`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({ comment: newComment.trim() }),
       });
   
       if (!response.ok) {
-        throw new Error('Failed to post comment');
+        throw new Error("Failed to post comment");
       }
   
-      // Notify WebSocket about the new comment
-      ws.send(
+      const user = "Test User"; // Replace with actual user information
+      const timestamp = new Date().toISOString();
+  
+      // Optimistically update the comments in the UI
+      setComments((prevComments) => [
+        ...prevComments,
+        { user, comment: newComment.trim(), timestamp },
+      ]);
+  
+      // Send a WebSocket message to notify others about the new comment
+      socket.send(
         JSON.stringify({
-          type: 'new_comment',
-          eventId,
-          comment: newComment,
+          type: "new_comment",
+          payload: {
+            eventId,
+            comment: { user, comment: newComment.trim(), timestamp },
+          },
         })
       );
   
-      // Fetch updated comments for consistency
-      const updatedEventResponse = await fetch(`/api/event/${eventId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-        },
-      });
-  
-      if (updatedEventResponse.ok) {
-        const updatedEvent = await updatedEventResponse.json();
-        setComments(updatedEvent.comments); // Update the comments list with the latest data
-      }
+      setNewComment(""); // Clear the input field
     } catch (err) {
-      console.error('Error posting or updating comments:', err.message);
+      console.error("Error posting comment:", err);
     }
   };
   
-  
-  
-
-  const reverseGeocode = async (lat, lng) => {
-    const apiKey = 'AIzaSyBnOXew-3iQOkCV2EZWNKalALeOI2zoRjQ'; // Replace with your API key
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Failed to fetch address');
-      }
-      const data = await response.json();
-      if (data.results && data.results.length > 0) {
-        return data.results[0].formatted_address; // Return the first formatted address
-      } else {
-        return 'Address not found';
-      }
-    } catch (error) {
-      console.error('Error:', error.message);
-      return 'Address not found';
-    }
-  };
-
-  if (loading) return <div className="modal">Loading event details...</div>;
-  if (error) return <div className="modal">Error: {error}</div>;
 
   return (
     <div className="modal">
@@ -126,47 +120,25 @@ const EventModal = ({ eventId, onClose }) => {
         <button className="close-button" onClick={onClose}>
           &times;
         </button>
-        <h1>{event.info}</h1>
-        <p>
-          <strong>Date:</strong> {new Date(event.date).toLocaleString()}
-        </p>
-        <p>
-          <strong>Location:</strong> {event.location.lat}, {event.location.lng}
-        </p>
-        <p>
-          <strong>Address:</strong> {address || 'Fetching address...'}
-        </p>
-        <p>
-          <strong>Age Restriction:</strong> {event.ageRestriction}
-        </p>
-        <p>
-          <strong>Gender Restriction:</strong> {event.genderRestriction}
-        </p>
-        <h2>Comments</h2>
-        <div className="comments-wrapper">
-          {comments.length > 0 ? (
-            comments.map((comment, index) => (
-              <div key={index}>
-                <strong>{comment.user}:</strong> {comment.comment}
-                <p>{new Date(comment.timestamp).toLocaleString()}</p>
-              </div>
-            ))
-          ) : (
-            <p>No comments yet. Be the first to comment!</p>
-          )}
-          <textarea id="new-comment" placeholder="Add your comment here..."></textarea>
-          <button
-            onClick={() => {
-              const comment = document.getElementById('new-comment').value.trim();
-              if (comment) {
-                handlePostComment(comment);
-                document.getElementById('new-comment').value = ''; // Clear the textarea
-              }
-            }}
-          >
-            Post Comment
-          </button>
+        <h1>Event Comments</h1>
+        <p>WebSocket Status: {status}</p>
+        <div
+          className="comments-section"
+          style={{ overflowY: "scroll", maxHeight: "300px" }}
+        >
+          {comments.map((comment, index) => (
+            <div key={index}>
+              <strong>{comment.user}:</strong> {comment.comment}
+              <p>{new Date(comment.timestamp).toLocaleString()}</p>
+            </div>
+          ))}
         </div>
+        <textarea
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add your comment here..."
+        />
+        <button onClick={handlePostComment}>Post Comment</button>
       </div>
     </div>
   );

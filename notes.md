@@ -267,3 +267,63 @@ apiRouter.post('/auth/login', async (req, res) => {
 With this we also learned about the secureApiRouter section of express, with this we will require authorization tokens for users in order to safeguard and limit what they can access.
 
 We learned about Atlas MongoDB service. In order to work, we have to create a dbConfig.json since it is going to use our credentials to access our database, this should not be addeed into our gitHub.
+
+
+### WEB socket
+
+# WebSocket Notes
+
+## **Overview**
+- **WebSocket** is a protocol providing full-duplex communication between client and server over a single persistent connection.
+- It operates over **TCP** and allows real-time data exchange with low overhead compared to HTTP.
+- WebSocket connections start as an HTTP handshake and upgrade to a WebSocket connection.
+
+---
+
+## **Key Features**
+1. **Full-Duplex Communication**: Allows simultaneous data flow between client and server.
+2. **Persistent Connection**: Reduces the overhead of establishing connections repeatedly.
+3. **Low Latency**: Ideal for real-time applications like chat, live notifications, and collaborative tools.
+
+---
+
+## **How WebSocket Works**
+1. **Handshake**:
+   - Starts with an HTTP request from the client to the server (e.g., `Upgrade: websocket` header).
+   - Server responds with `101 Switching Protocols` to establish the WebSocket connection.
+
+2. **Communication**:
+   - Once connected, messages can be sent in both directions using frames.
+   - No need to re-establish the connection for subsequent messages.
+
+3. **Closure**:
+   - Either client or server can close the connection.
+
+---
+
+## **Common Use Cases**
+- Real-time chat applications.
+- Live data feeds (e.g., stock prices, sports scores).
+- Multiplayer gaming.
+- Collaborative tools (e.g., Google Docs, whiteboard apps).
+- IoT (Internet of Things) data transmission.
+
+---
+
+## **Advantages**
+- **Efficiency**: No need for repeated HTTP requests.
+- **Real-Time Updates**: Perfect for instant communication and notifications.
+- **Lightweight**: Reduced header size compared to HTTP.
+
+## **Disadvantages**
+- **Firewall Issues**: Some firewalls may block WebSocket traffic.
+- **Complexity**: Requires more effort to implement and maintain compared to simple HTTP polling.
+- **Resource Intensive**: Persistent connections consume server resources.
+
+---
+
+## **WebSocket API**
+### **Client-Side API**
+1. **Create a WebSocket Connection**:
+   ```javascript
+   const socket = new WebSocket('ws://example.com');

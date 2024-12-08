@@ -1,107 +1,102 @@
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-const express = require('express');
-const app = express();
 const DB = require('./database.js');
 require('dotenv').config();
 const { WebSocketServer } = require('ws');
 
+
 console.log(process.env)
 
 const authCookieName = 'token';
+const express = require('express');
+const app = express();
+
+app.use(express.static('./public'));
+
+// Set up the HTTP server
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
 
-const wss = new WebSocketServer({ noServer: true });
-const connections = [];
-
-// Ping-pong mechanism to keep connections alive
-const interval = setInterval(() => {
-  connections.forEach((connection) => {
-    if (!connection.alive) {
-      connection.ws.terminate();
-    } else {
-      connection.alive = false;
-      connection.ws.ping();
-    }
-  });
-}, 10000); // Every 10 seconds
-
-wss.on('connection', (ws) => {
-  console.log('New WebSocket connection established');
-
-  const connection = { ws, alive: true };
-  connections.push(connection);
-
-  // Respond to pong messages
-  ws.on('pong', () => {
-    connection.alive = true;
-  });
-
-  ws.on('message', async (message) => {
-    try {
-      const data = JSON.parse(message);
-      console.log('WebSocket message received:', data);
-
-      if (data.type === 'comment') {
-        const { eventId, comment } = data.payload;
-        const user = data.user || "Anonymous";
-
-        // Save comment to database
-        const updatedEvent = await DB.addCommentToEvent(eventId, {
-          user,
-          comment: comment.trim(),
-          timestamp: new Date(),
-        });
-
-        // Broadcast new comment to all connected clients
-        const broadcastMessage = JSON.stringify({
-          type: 'comment',
-          payload: {
-            eventId,
-            comment: {
-              user,
-              comment: comment.trim(),
-              timestamp: new Date(),
-            },
-          },
-        });
-
-        connections.forEach((client) => {
-          if (client.ws.readyState === ws.OPEN) {
-            client.ws.send(broadcastMessage);
-          }
-        });
-      }
-    } catch (err) {
-      console.error('Error handling WebSocket message:', err.message);
-    }
-  });
-
-  ws.on('close', () => {
-    const index = connections.indexOf(connection);
-    if (index > -1) {
-      connections.splice(index, 1);
-    }
-    console.log('WebSocket connection closed');
-  });
-});
-
-// Clean up interval on server close
-wss.on('close', () => {
-  clearInterval(interval);
-});
-
-// HTTP Server Integration
 const server = app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
 
+const wss = new WebSocketServer({ noServer: true });
+
+// Track all WebSocket connections
+let connections = [];
+let connectionId = 0;
+
+// Handle HTTP to WebSocket protocol upgrade (Only once)
 server.on('upgrade', (request, socket, head) => {
+  // Ensure only one upgrade handling
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request);
   });
 });
+
+// WebSocket connection logic
+wss.on('connection', (ws) => {
+  const connection = { id: ++connectionId, alive: true, ws };
+  connections.push(connection);
+
+  console.log(`New WebSocket connection established (ID: ${connection.id})`);
+
+  // Handle incoming messages
+  ws.on('message', async (data) => {
+    try {
+      const message = JSON.parse(data);
+
+      if (message.type === 'new_comment') {
+        const { eventId, comment } = message.payload;
+        const user = comment.user || 'Anonymous'; // Replace with real user data from authentication
+
+        // Save the comment to the database
+        await DB.addCommentToEvent(eventId, {
+          user,
+          comment: comment.comment.trim(),
+          timestamp: comment.timestamp,
+        });
+
+        // Broadcast to all clients except the sender
+        const broadcastMessage = JSON.stringify(message);
+        connections.forEach((c) => {
+          if (c.id !== connection.id) {
+            c.ws.send(broadcastMessage);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Error processing WebSocket message:', err.message);
+    }
+  });
+
+  // Mark connection as alive on pong response
+  ws.on('pong', () => {
+    connection.alive = true;
+  });
+
+  // Remove connection on close
+  ws.on('close', () => {
+    connections = connections.filter((c) => c.id !== connection.id);
+    console.log(`WebSocket connection closed (ID: ${connection.id})`);
+  });
+});
+
+// Periodically check connection health
+setInterval(() => {
+  connections.forEach((c) => {
+    if (!c.alive) {
+      c.ws.terminate();
+      connections = connections.filter((conn) => conn.id !== c.id);
+      console.log(`Connection terminated (ID: ${c.id})`);
+    } else {
+      c.alive = false;
+      c.ws.ping();
+    }
+  });
+}, 10000); // Every 10 seconds
+
 
 
 app.use(express.json());
@@ -296,15 +291,24 @@ secureApiRouter.post('/event/:id/comments', async (req, res) => {
 });
 
 // Fetch comments for an event
-secureApiRouter.get('/event/:id/comments', async (req, res) => {
+secureApiRouter.post('/event/:id/comments', async (req, res) => {
   const { id } = req.params;
+  const { comment } = req.body;
+
+  if (!comment || comment.trim() === '') {
+    return res.status(400).send({ error: 'Comment cannot be empty' });
+  }
 
   try {
-    const comments = await DB.getEventComments(id);
-    res.status(200).send(comments);
+    const updatedEvent = await DB.addCommentToEvent(id, {
+      user: req.user.email,
+      comment: comment.trim(),
+      timestamp: new Date(),
+    });
+    res.status(201).send(updatedEvent);
   } catch (err) {
-    console.error('Error fetching comments:', err);
-    res.status(500).send({ error: 'Failed to fetch comments', details: err.message });
+    console.error('Error adding comment:', err);
+    res.status(500).send({ error: 'Failed to add comment', details: err.message });
   }
 });
 
