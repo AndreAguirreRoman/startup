@@ -5,6 +5,7 @@
 @use 'footer';
 @use 'weather';
 @use 'event-modal';
+@use 'explore';
  
 .body-general {
     height: calc(100vh - 140px)

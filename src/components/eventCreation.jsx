@@ -7,7 +7,7 @@ const EventForm = () => {
   const getCurrentDateTime = () => {
     const now = new Date();
     const offset = now.getTimezoneOffset() * 60000; // Offset in milliseconds
-    const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+    const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 14); // Format: YYYY-MM-DDTHH:MM
     return localISOTime;
   };
 
@@ -141,7 +141,7 @@ const EventForm = () => {
             </div>
 
             <div className="create-event__street">
-                <label htmlFor="street">street:</label>
+                <label htmlFor="street">Street:</label>
                   <input
                     type="text"
                     id="street"
@@ -157,7 +157,7 @@ const EventForm = () => {
               
 
               <div className="create-event__address-city">
-                <label htmlFor="city">city:</label>
+                <label htmlFor="city">City:</label>
                   <input
                     type="text"
                     id="city"
@@ -169,29 +169,35 @@ const EventForm = () => {
               </div>
 
               <div className="create-event__address-state">
-              <label htmlFor="state">state:</label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  required
+                <label htmlFor="state">State:</label>
+                  <input
+                    type="text"
+                    id="state"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    required
                 />
-            </div>
+              </div>
 
             </div>
             
             
 
-            <div className='create-event__restrictions-text'>Restrictions</div>
+            <div className='create-event__restrictions-text'>
+              <div className='create-event__restrictions-text-restrictions'>Restrictions</div>
+              
+              <div className='create-event__restrictions-text-divition'>
+              <hr></hr>
+              </div>  
+            </div>
 
     
             <div className="create-event__restrictions">
 
               <div className="create-event__restrictions-age">
 
-              <label htmlFor="ageRestriction">Age Restriction:</label>
+              <label htmlFor="ageRestriction">Age:</label>
               <input
                 type="text"
                 id="ageRestriction"
@@ -201,7 +207,7 @@ const EventForm = () => {
               />
               </div>
               <div className="create-event__restrictions-gender">
-                <label htmlFor="genderRestriction">Gender?:</label>
+                <label htmlFor="genderRestriction">Gender:</label>
                 <select
                   type="text"
                   id="genderRestriction"
@@ -229,10 +235,12 @@ const EventForm = () => {
                 required
               />
             </div>
-    
-            <button className="button" type="submit" disabled={loading}>
+            <div className='button-form'>
+            <button className="button-form-butt" type="submit" disabled={loading}>
               {loading ? "Creating..." : "Create Event"}
             </button>
+            </div>
+            
           </form>
     
           {responseMessage && <p>{responseMessage}</p>}

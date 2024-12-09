@@ -82,16 +82,17 @@ const Explore = ({ authState, userName, onLogout }) => {
           {error && <p className="error">Error: {error}</p>}
           {!loading && !error && (
 
-            <div className="body-events">
+            <div className="body-events__wrapper-events">
 
               {events.map((event) => (
-                <div key={event._id} className="body-event__card">
-                  <h2>{event.info}</h2>
+                <div key={event._id} className="body-events__wrapper-events__card">
+                  <div className='title'><h2 className='title-text'>{event.info}</h2></div>
+                  
                   <p><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
                   <p><strong>Address:</strong> {addresses[event._id] || 'Fetching address...'}</p>
                   <p><strong>Attending</strong>: {event.attendanceCount}</p>
                   <button
-                    className="body-event__button"
+                    className="body-event__button button"
                     onClick={() => setSelectedEventId(event._id)}
                   >
                     View Details

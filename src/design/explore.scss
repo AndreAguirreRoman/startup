@@ -1,0 +1,53 @@
+
+
+$light-grey: #f0f0f0;
+$gradient-main-1 : $light-grey;
+
+$medium-grey: #a8a8a8;
+$gradient-main-2 : $medium-grey;
+
+$dark-grey: #5c5c5c;
+$gradient-main-3 : $dark-grey;
+
+$soft-silver: #f0f0f0;
+$elegant-slate: #a8a8a8;
+$charcoal: #5c5c5c;
+
+$soft-silver: #536976;
+$elegant-slate: #292e49;
+
+$gold: #FFD700;
+
+
+.body-explore {
+    display: flex;
+    flex-direction: column;
+
+    .body-events__wrapper {
+        width: 80vw;
+        padding-left: 200px;
+        padding-top: 30px;
+        &-events {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 10px;
+            p {
+                color: white;
+            }
+            .title {
+                color: $gold;
+                display: flex;
+                justify-content: center;
+            }
+            &__card {
+
+                padding: 20px;
+                background-color: $elegant-slate;
+                border-radius:10px;
+        
+            }
+        }
+    }
+
+
+}

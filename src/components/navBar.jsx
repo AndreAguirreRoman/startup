@@ -71,7 +71,7 @@ const Navbar = ({ onAuthChange }) => {
         )}
       </div>
       <div className="navbar-right">
-      <button onClick={() => setShowModal(true)}>Create Event</button>
+      <button className="navbar-right__button" onClick={() => setShowModal(true)}>Create Event</button>
         {showModal && (
           <div className="modal">
             <div className="modal-content">
