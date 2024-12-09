@@ -6,7 +6,7 @@ const EventComments = ({ eventId, user }) => {
   const ws = React.useRef(null);
 
   useEffect(() => {
-    // Establish WebSocket connection
+    
     ws.current = new WebSocket('ws://localhost:4000');
 
     ws.current.onopen = () => {
@@ -25,7 +25,7 @@ const EventComments = ({ eventId, user }) => {
     };
 
     return () => {
-      // Cleanup WebSocket on component unmount
+      
       ws.current.close();
     };
   }, [eventId]);
@@ -42,7 +42,7 @@ const EventComments = ({ eventId, user }) => {
           user,
         })
       );
-      setCommentInput(''); // Clear input
+      setCommentInput(''); 
     }
   };
 

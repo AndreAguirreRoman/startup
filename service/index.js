@@ -1,113 +1,20 @@
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
-const DB = require('./database.js');
-require('dotenv').config();
-const { WebSocketServer } = require('ws');
-
-
-console.log(process.env)
-
-const authCookieName = 'token';
 const express = require('express');
 const app = express();
+const DB = require('./database.js');
+const authCookieName = 'token';
 
-app.use(express.static('./public'));
-
-// Set up the HTTP server
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
-
-const server = app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
-
-const wss = new WebSocketServer({ noServer: true });
-
-// Track all WebSocket connections
-let connections = [];
-let connectionId = 0;
-
-// Handle HTTP to WebSocket protocol upgrade (Only once)
-server.on('upgrade', (request, socket, head) => {
-  // Ensure only one upgrade handling
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request);
-  });
-});
-
-// WebSocket connection logic
-wss.on('connection', (ws) => {
-  const connection = { id: ++connectionId, alive: true, ws };
-  connections.push(connection);
-
-  console.log(`New WebSocket connection established (ID: ${connection.id})`);
-
-  // Handle incoming messages
-  ws.on('message', async (data) => {
-    try {
-      const message = JSON.parse(data);
-
-      if (message.type === 'new_comment') {
-        const { eventId, comment } = message.payload;
-        const user = comment.user || 'Anonymous'; // Replace with real user data from authentication
-
-        // Save the comment to the database
-        await DB.addCommentToEvent(eventId, {
-          user,
-          comment: comment.comment.trim(),
-          timestamp: comment.timestamp,
-        });
-
-        // Broadcast to all clients except the sender
-        const broadcastMessage = JSON.stringify(message);
-        connections.forEach((c) => {
-          if (c.id !== connection.id) {
-            c.ws.send(broadcastMessage);
-          }
-        });
-      }
-    } catch (err) {
-      console.error('Error processing WebSocket message:', err.message);
-    }
-  });
-
-  // Mark connection as alive on pong response
-  ws.on('pong', () => {
-    connection.alive = true;
-  });
-
-  // Remove connection on close
-  ws.on('close', () => {
-    connections = connections.filter((c) => c.id !== connection.id);
-    console.log(`WebSocket connection closed (ID: ${connection.id})`);
-  });
-});
-
-// Periodically check connection health
-setInterval(() => {
-  connections.forEach((c) => {
-    if (!c.alive) {
-      c.ws.terminate();
-      connections = connections.filter((conn) => conn.id !== c.id);
-      console.log(`Connection terminated (ID: ${c.id})`);
-    } else {
-      c.alive = false;
-      c.ws.ping();
-    }
-  });
-}, 10000); // Every 10 seconds
-
+const { peerProxy } = require('./peerProxy.js');
+app.use(express.static('./public'));
 
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static('public'));
 app.set('trust proxy', true);
-
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
 
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
@@ -149,25 +56,15 @@ apiRouter.post('/auth/create', async (req, res) => {
 });
 
 
-//  apiRouter.post('/auth/login', async (req, res) => {
-//    const user = await DB.getUser(req.body.email);
-//    if (user) {
-//      if (await bcrypt.compare(req.body.password, user.password)) {
-//        setAuthCookie(res, user.token);
-//        res.send({ id: user._id });`
-//        return;
-//      }
-//    }
-//    res.status(401).send({ msg: 'Unauthorized' });
-//  });
+
 
 apiRouter.post('/auth/login', async (req, res) => {
   const user = await DB.getUser(req.body.email);
 
   if (user) {
-    console.log('User found:', user); // Debugging log
+    console.log('User found:', user); 
     const passwordMatch = await bcrypt.compare(req.body.password, user.password);
-    console.log('Password Match:', passwordMatch); // Debugging log
+    console.log('Password Match:', passwordMatch); 
 
     if (passwordMatch) {
       setAuthCookie(res, user.token);
@@ -175,7 +72,7 @@ apiRouter.post('/auth/login', async (req, res) => {
       return;
     }
   } else {
-    console.log('User not found:', req.body.email); // Debugging log
+    console.log('User not found:', req.body.email); 
   }
 
   res.status(401).send({ msg: 'Unauthorized' });
@@ -211,9 +108,9 @@ secureApiRouter.use(async (req, res, next) => {
 
 secureApiRouter.delete('/auth/deleteAccount', async (req, res) => {
   try {
-    const result = await DB.deleteUser(req.user.email); // Delete user by email
+    const result = await DB.deleteUser(req.user.email); 
     if (result.deletedCount > 0) {
-      res.clearCookie(authCookieName); // Clear the auth cookie
+      res.clearCookie(authCookieName); 
       res.status(200).send({ msg: 'Account deleted successfully' });
     } else {
       res.status(404).send({ msg: 'User not found' });
@@ -270,7 +167,7 @@ secureApiRouter.get('/event/:id', async (req, res) => {
 
 
 secureApiRouter.post('/event/:id/comments', async (req, res) => {
-  const { id } = req.params; // Event ID
+  const { id } = req.params; 
   const { comment } = req.body;
 
   if (!comment || comment.trim() === '') {
@@ -290,7 +187,7 @@ secureApiRouter.post('/event/:id/comments', async (req, res) => {
   }
 });
 
-// Fetch comments for an event
+
 secureApiRouter.post('/event/:id/comments', async (req, res) => {
   const { id } = req.params;
   const { comment } = req.body;
@@ -313,20 +210,20 @@ secureApiRouter.post('/event/:id/comments', async (req, res) => {
 });
 
 
-// Increment attendance for an event
+
 secureApiRouter.post('/event/:id/attend', async (req, res) => {
   const { id } = req.params;
 
   try {
     const updatedEvent = await DB.incrementAttendance(id);
-    res.status(200).send(updatedEvent); // Send updated event
+    res.status(200).send(updatedEvent); 
   } catch (err) {
     console.error('Error incrementing attendance:', err);
     res.status(500).send({ error: 'Failed to increment attendance', details: err.message });
   }
 });
 
-// Get the current attendance count for an event
+
 secureApiRouter.get('/event/:id/attendance', async (req, res) => {
   const { id } = req.params;
 
@@ -355,3 +252,8 @@ function setAuthCookie(res, authToken) {
     sameSite: 'strict',
   });
 }
+
+const httpService = app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});
+peerProxy(httpService);
