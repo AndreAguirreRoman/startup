@@ -4,6 +4,7 @@ export class AuthState {
   static Unauthenticated = new AuthState('unauthenticated');
 
   constructor(name) {
+    console.log(name)
     this.name = name;
   }
 }

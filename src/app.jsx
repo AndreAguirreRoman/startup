@@ -6,6 +6,7 @@ import Login from './pages/login';
 import Event from './pages/event';
 import { AuthState } from './components/login/authState';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import ChatLogin from './pages/chat';
 
 function NotFound() {
   return <main className='container-fluid bg-secondary text-center'>404: Return to sender. Address unknown.</main>;
@@ -23,9 +24,13 @@ export default function App() {
     } else {
       localStorage.setItem('userName', name); 
     }
+
     setUserName(name);
     setAuthState(newAuthState);
   };
+
+  console.log("Auth state", authState)
+  console.log("Username", userName);
 
   return (
     <BrowserRouter>
@@ -58,6 +63,10 @@ export default function App() {
           />
           <Route path="/event"
             element={<Event authState={authState} userName={userName} onLogout={() => handleAuthChange('', AuthState.Unauthenticated)} />}
+            exact
+          />
+          <Route path="/chat"
+            element={<ChatLogin authState={authState} userName={userName} onLogout={() => handleAuthChange('', AuthState.Unauthenticated)} />}
             exact
           />
           <Route path="*" element={<NotFound />} />

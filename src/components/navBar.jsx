@@ -18,7 +18,7 @@ const Navbar = ({ onAuthChange }) => {
 
   useEffect(() => {
 
-    const storedUserName = localStorage.getItem("userFirstName");
+    const storedUserName = localStorage.getItem("userName");
 
     if (storedUserName) {
       setAuthState(AuthState.Authenticated); 
@@ -57,6 +57,8 @@ const Navbar = ({ onAuthChange }) => {
     }
   );
 
+  console.log("auth state", authState)
+
 
   return (
     <div className="navbar">
@@ -64,6 +66,7 @@ const Navbar = ({ onAuthChange }) => {
         <NavLink className="navbar-left__link" to="/home">Home</NavLink>
         <NavLink className="navbar-left__link" to="/about">About Us</NavLink>
         <NavLink className="navbar-left__link" to="/explore">Explore</NavLink>
+        <NavLink className="navbar-left__link" to="/chat">Chat</NavLink>
         {authState === AuthState.Authenticated ? (
           <NavLink className="navbar-left__link" onClick={logout}>Log Out</NavLink>
         ) : (

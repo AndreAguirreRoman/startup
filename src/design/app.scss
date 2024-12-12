@@ -16,5 +16,28 @@
 }
 
 .body-explore {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 100px);
+}
+
+.body_chat {
+    height: calc(100vh - 100px);
+    .body-chat__header {
+        display: flex;
+        justify-content: center;
+    }
+    #chat-controls {
+        display: flex;
+        justify-content: center;
+    }
+
+    #chat-text {
+        width: 80vw;
+        display: flex;
+        justify-content: center;
+    }
+    .chat-text-text {
+        display: flex;
+        flex-direction: column;
+    }
+    
 }

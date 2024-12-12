@@ -188,27 +188,6 @@ secureApiRouter.post('/event/:id/comments', async (req, res) => {
 });
 
 
-secureApiRouter.post('/event/:id/comments', async (req, res) => {
-  const { id } = req.params;
-  const { comment } = req.body;
-
-  if (!comment || comment.trim() === '') {
-    return res.status(400).send({ error: 'Comment cannot be empty' });
-  }
-
-  try {
-    const updatedEvent = await DB.addCommentToEvent(id, {
-      user: req.user.email,
-      comment: comment.trim(),
-      timestamp: new Date(),
-    });
-    res.status(201).send(updatedEvent);
-  } catch (err) {
-    console.error('Error adding comment:', err);
-    res.status(500).send({ error: 'Failed to add comment', details: err.message });
-  }
-});
-
 
 
 secureApiRouter.post('/event/:id/attend', async (req, res) => {

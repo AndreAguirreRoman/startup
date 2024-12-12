@@ -6,9 +6,7 @@ import {
   APIProvider,
   Map,
   AdvancedMarker,
-  Pin,
   InfoWindow,
-  useMap
 } from "@vis.gl/react-google-maps";
 import EventModal from './eventModal';
 

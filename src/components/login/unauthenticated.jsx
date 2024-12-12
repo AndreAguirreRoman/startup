@@ -1,5 +1,3 @@
-// src/components/login/unauthenticated.js
-
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 
@@ -44,10 +42,11 @@ export function Unauthenticated({ onLogin }) {
         });
     if (response.status === 200) {
       const data = await response.json();
+      console.log("data", data)
       localStorage.setItem('userEmail', email);
       localStorage.setItem('authToken', data.token);
       if (isSignup) {
-        localStorage.setItem('userFirstName', firstName); // Save first name during sign-up
+        localStorage.setItem('userFirstName', firstName); 
       }
       onLogin(isSignup ? firstName : email);
     } else {
